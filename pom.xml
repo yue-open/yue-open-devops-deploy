@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ai.yue.library</groupId>
+		<artifactId>yue-library-dependencies</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<groupId>ai.yue.open</groupId>
+	<artifactId>yue-open</artifactId>
+	<version>${revision}</version>
+	<packaging>pom</packaging>
+	<name>yue-open</name>
+	<description>yue 开源项目</description>
+
+	<properties>
+		<revision>0.0.1-SNAPSHOT</revision>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<configuration>
+					<updatePomFile>true</updatePomFile>
+					<pomElements>
+						<parent>expand</parent>
+						<dependencyManagement>interpolate</dependencyManagement>
+						<properties>interpolate</properties>
+						<distributionManagement>interpolate</distributionManagement>
+						<repositories>interpolate</repositories>
+					</pomElements>
+				</configuration>
+				<executions>
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
