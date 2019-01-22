@@ -7,18 +7,18 @@
 		<artifactId>yue-open</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>yue-open-devops-deploy</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
-	<name>yue-open-devops-deploy</name>
-	<description>yue open 持续部署</description>
-	
+	<artifactId>yue-open-http-file-server</artifactId>
+
+	<name>yue-open-http-file-server</name>
+	<description>用于HTTP请求协议的文件上传和下载</description>
+
 	<dependencies>
 		<dependency>
 			<groupId>ai.yue.library</groupId>
 			<artifactId>yue-library-base</artifactId>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>

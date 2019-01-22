@@ -1,0 +1,9 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 512MB
+      max-request-size: 1024MB
+yue:
+  file-server:
+    project-name:
+    - ai-doc
