@@ -2,11 +2,9 @@ yue:
   devops:
     deploy:
       env:
-        dev-bearer-token: Bearer token-28vb8:scvgfq46rl8qpzh8sh2hq6t824b92bxnsqsscsg49c2fwm7xh9bq4c
+        dev-bearer-token: Bearer token-47f49:s8jvl9hcvrcg9r9jcrft7cgdzf2qrngfm4s9sf6xs75qtx7zhhb5xg
         pretest-bearer-token: Bearer token-5xncg:lm5p45wwf6gfl5cpmpwhxmqkl8psjvrcpq6hxdrwd4hnggfb4r97tg
         master-bearer-token: Bearer token-5xncg:lm5p45wwf6gfl5cpmpwhxmqkl8psjvrcpq6hxdrwd4hnggfb4r97tg
-      constant:        workload-api-url: https://47.96.228.190/v3/project/c-6lssd:p-drpv6/workloads/deployment:default:ssc-webhook
+      constant:        workload-api-url: https://10.100.3.153/p/c-prnj6:p-dfrng/workloads
         dingtalk-devops-robot-webhook: https://oapi.dingtalk.com/robot/send?access_token=249a66051d4027f1d73391ace0fd016cabd3088f39eb38bc87dcfb23765a0b66        dingtalk-at-mobiles:
         - 18523146316
-        - 18580408663
-        - 13628482577

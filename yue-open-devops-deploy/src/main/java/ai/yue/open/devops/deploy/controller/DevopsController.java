@@ -6,9 +6,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSONObject;
+
 import ai.yue.library.base.view.Result;
 import ai.yue.open.devops.deploy.constant.EnvEnum;
 import ai.yue.open.devops.deploy.service.DevopsService;
+import cn.hutool.core.lang.Console;
 
 /**
  * @author  孙金川
@@ -30,6 +33,13 @@ public class DevopsController {
 	@PutMapping("/redeploy")
 	public Result<?> redeploy(@RequestParam("workloadApiUrl") String workloadApiUrl,
 								@RequestParam("envEnum") EnvEnum envEnum) {
+		// 1. 打印日志
+		JSONObject logInfo = new JSONObject();
+		logInfo.put("workloadApiUrl", workloadApiUrl);
+		logInfo.put("envEnum", envEnum);
+		Console.log(logInfo);
+		
+		// 2. 重新部署
 		return devopsService.redeploy(workloadApiUrl, envEnum);
 	}
 	

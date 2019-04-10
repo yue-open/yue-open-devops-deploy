@@ -76,13 +76,16 @@ public class FileController {
 			for (MultipartFile multipartFile : files) {
 				// 4. 获得文件名后缀
 				String originalFilename = multipartFile.getOriginalFilename();
-				String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+				int fileSuffixIndex = originalFilename.lastIndexOf(".");
+				String fileSuffix = originalFilename.substring(fileSuffixIndex);
 				String fileURI = projectName + "/" + UUIDUtils.lowerCaseUUID() + fileSuffix;
 				String filePath = file_server_home + fileURI;
 				String fileURL = serverDownloadURL + fileURI;
 				
 				// 5. 保存文件地址
+				String fileName = originalFilename.substring(0, fileSuffixIndex);
 				JSONObject fileAddressJSON = new JSONObject();
+				fileAddressJSON.put("fileName", fileName);
 				fileAddressJSON.put("filePath", filePath);
 				fileAddressJSON.put("fileURL", fileURL);
 				fileAddressJSONArray.add(fileAddressJSON);
