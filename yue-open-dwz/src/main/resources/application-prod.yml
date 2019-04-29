@@ -1,0 +1,15 @@
+server:
+  port: 50003
+spring:
+  datasource: 
+    druid: 
+      url: jdbc:mysql://10.191.21.130:3306/he_campus_dwz?characterEncoding=utf-8&useSSL=false
+      username: dwz
+      password: dwz3306
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 3000
+logging:
+  level:
+    com.sbs.he.campus.dwz.aspect: warn

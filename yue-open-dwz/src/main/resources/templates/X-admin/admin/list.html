@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="../css/font.css">
+    <link rel="stylesheet" href="../css/xadmin.css">
+    <script type="text/javascript" src="../lib/jquery/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../js/xadmin.js"></script>
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="/welcome">首页</a>
+        <a>
+          <cite>导航元素</cite>
+        </a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+      	<i class="layui-icon" style="line-height:30px">ဂ</i>
+      </a>
+    </div>
+    <div class="x-body">
+      <xblock>
+        <button class="layui-btn" onclick="x_admin_show('添加管理员','edit')"><i class="layui-icon"></i>添加</button>
+        <span id="count" class="x-right" style="line-height:40px">共有数据： 条</span>
+      </xblock>
+      <table id="table" lay-filter="table"></table>
+	  <table class="layui-table layui-hide">
+	  	<tbody>
+	  		<tr>
+	  			<td class="td-manage">
+					{{#  if(d.admin_status){ }}
+		  			    <a class="admin-status" title="停用" lay-event="status" href="javascript:;">
+		  			    	<i class="layui-icon">&#xe61a;</i>
+	              		</a>&nbsp;
+					{{#  } else { }}
+		  			    <a class="admin-status" title="启用" lay-event="status" href="javascript:;">
+		  			    	<i class="layui-icon">&#xe619;</i>
+	              		</a>&nbsp;
+					{{#  } }}
+	  				<a title="编辑" lay-event="edit" href="javascript:;">
+	  					<i class="layui-icon">&#xe642;</i>
+	  				</a>&nbsp;
+	  				<a title="删除" lay-event="del" href="javascript:;">
+	  					<i class="layui-icon">&#xe640;</i>
+	  				</a>
+	  			</td>
+	  		</tr>
+	  	</tbody>
+	  </table>
+    </div>
+    <script>
+    layui.use(['table', "util"], function(){
+		var table = layui.table;
+		var util = layui.util;
+		//第一个实例
+		table.render({
+		   elem: '#table'
+		  ,url: 'page' //数据接口
+		  ,page: true //开启分页
+		  ,cols: [[ //表头
+		     {type: "checkbox", fixed: 'left'}
+		    ,{field: 'id', type: "numbers", title: 'ID', width: 60, sort: true}
+		    ,{field: 'username', title: '帐号'}
+		    ,{field: 'password', title: '密码'}
+		    ,{field: 'role_name', title: '角色名'}
+		    ,{field: 'create_time', title: '创建时间', sort: true, templet: function(d){
+			    return util.toDateString(d.create_time)
+		    }}
+		    ,{field: 'update_time', title: '更新时间', sort: true, templet: function(d){
+				return util.toDateString(d.update_time)
+		   	}}
+		    ,{title: '状态', width: "8%", templet: function(d){
+		    	var admin_status = d.admin_status;
+		    	var status_html = "";
+		    	var disabled_class = "";
+		    	if (admin_status) {
+		    		status_html = "已启用"
+		    	}else {
+		    		status_html = "已停用"
+		    		disabled_class = "layui-btn-disabled";
+		    	}
+		    	var html = "<span class='" + disabled_class + " td-status layui-btn layui-btn-normal layui-btn-xs'>"+ status_html +"</span>";
+				return html;
+		   	}}
+		    ,{title: '操作', width: '12%', fixed: 'right', align:'center', toolbar: ".td-manage"} //这里的toolbar值是模板元素的选择器
+		  ]]
+		  ,done: function(res, curr, count){
+			    //如果是异步请求数据方式，res即为你接口返回的信息。
+			    //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+				$("#count").text("共有数据："+ count +" 条");
+		   }
+		});
+		  
+		//监听工具条
+	    table.on('tool(table)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+	      var data = obj.data; //获得当前行数据
+	      var id = data.id;
+	      var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+	     
+	      /*admin-状态*/
+	      if (layEvent === 'status') { // 状态
+	    	  var prompt_msg = "";
+	      	  var title = "";
+	      	  var admin_status = 0;
+	    	  if (data.admin_status) {
+	    		  prompt_msg = "确认要停用吗？"
+	    		  title = "启用";
+	    	  }else {
+	    		  prompt_msg = "确认要启用吗？"
+	    		  title = "停用";
+	    		  admin_status = 1;
+	    	  }
+	      	  var a_this = this;
+	          layer.confirm(prompt_msg, function(index){
+	        	  layer.close(index);
+	        	  var load_index = layer.load();
+	        	  
+	        	  //发异步把用户状态进行更改
+			      $.ajax({
+			    	   type: "put",
+			    	   url: "update",
+			    	   data: "username=" + data.username + "&admin_status=" + admin_status,
+			    	   success: function(result) {
+			    		   layer.close(load_index);
+			    		   if (result.flag) {
+			    				layer.msg("操作成功", {icon: 6});
+		            	   }else {
+		            			layer.alert(result.msg);
+		            	   }
+			    	   }
+			      })
+		          $(a_this).attr('title', title)
+			      if (title == '启用'){
+			          //同步更新缓存对应的值
+			    	  obj.update({
+			    	      admin_status: false
+			    	  });
+				      $(a_this).find('i').html('&#xe619;');
+				      $(a_this).parents("tr").find(".td-status").addClass('layui-btn-disabled').html('已停用');
+				      layer.msg('已停用!',{icon: 1,time:1000});
+	              }else{
+	            	  obj.update({
+			    	      admin_status: true
+			    	  });
+		              $(a_this).find('i').html('&#xe61a;');
+		              $(a_this).parents("tr").find(".td-status").removeClass('layui-btn-disabled').html('已启用');
+		              layer.msg('已启用!',{icon: 1,time:1000});
+	              }
+	          });
+	      }else if (layEvent === 'edit') { //编辑
+	        x_admin_show('编辑','edit', id);
+		  }else if (layEvent === 'del'){ //删除
+	      	layer.confirm('确认要删除此行数据么', function(index){
+	        	layer.close(index);
+	        	var load_index = layer.load();
+	          	//向服务端发送删除指令
+	          	$.ajax({
+	        		type: "delete",
+	        		url: 'delete',
+	        		contentType: "application/json",
+	        		data: '[{"id": '+ id +'}]',
+	        		success: function(result) {
+	        			layer.close(load_index);
+		        		if (result.flag) {
+				            layer.msg('已删除!',{icon:1,time:2000});
+					        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+		        		}else {
+		        			layer.alert(result.msg);
+		        		}
+	       			}
+	      		})
+	    	});
+	  	  }
+	    });
+	  });    
+    </script>
+  </body>
+
+</html>
