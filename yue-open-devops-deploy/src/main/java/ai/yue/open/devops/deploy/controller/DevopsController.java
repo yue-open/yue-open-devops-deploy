@@ -22,7 +22,7 @@ import cn.hutool.core.lang.Console;
 public class DevopsController {
 
 	@Autowired
-	DevopsService devopsService;
+	private DevopsService devopsService;
 	
 	/**
 	 * 重新部署
@@ -37,7 +37,7 @@ public class DevopsController {
 		JSONObject logInfo = new JSONObject();
 		logInfo.put("workloadApiUrl", workloadApiUrl);
 		logInfo.put("envEnum", envEnum);
-		Console.log(logInfo);
+		Console.log("【工作负载-重新部署】请求参数：{}", logInfo);
 		
 		// 2. 重新部署
 		return devopsService.redeploy(workloadApiUrl, envEnum);

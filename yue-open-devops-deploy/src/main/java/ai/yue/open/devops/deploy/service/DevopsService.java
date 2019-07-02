@@ -6,6 +6,8 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,17 +18,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dingtalk.api.DefaultDingTalkClient;
+import com.dingtalk.api.DingTalkClient;
+import com.dingtalk.api.request.OapiRobotSendRequest;
+import com.dingtalk.api.response.OapiRobotSendResponse;
+import com.taobao.api.ApiException;
 
 import ai.yue.library.base.util.DateUtils;
 import ai.yue.library.base.view.Result;
 import ai.yue.library.base.view.ResultInfo;
-import ai.yue.open.devops.deploy.config.ConstantProperties;
-import ai.yue.open.devops.deploy.config.EnvProperties;
+import ai.yue.open.devops.deploy.config.DevopsDeployProperties;
 import ai.yue.open.devops.deploy.constant.EnvEnum;
-import ai.yue.open.devops.deploy.dingtalk.chatbot.DingtalkChatbotClient;
-import ai.yue.open.devops.deploy.dingtalk.chatbot.SendResult;
-import ai.yue.open.devops.deploy.dingtalk.chatbot.message.LinkMessage;
-import ai.yue.open.devops.deploy.dingtalk.chatbot.message.TextMessage;
+import cn.hutool.core.lang.Console;
+import cn.hutool.core.util.StrUtil;
 
 /**
  * @author  孙金川
@@ -36,13 +40,19 @@ import ai.yue.open.devops.deploy.dingtalk.chatbot.message.TextMessage;
 public class DevopsService {
 
 	@Autowired
-	RestTemplate restTemplate;
+	private RestTemplate restTemplate;
 	@Autowired
-	DingtalkChatbotClient dingtalkChatbotClient;
-	@Autowired
-	EnvProperties envProperties;
-	@Autowired
-	ConstantProperties constantProperties;
+	private DevopsDeployProperties devopsDeployProperties;
+	private DingTalkClient dingTalkClient;
+	
+	/**
+	 * 初始化client
+	 */
+	@PostConstruct
+	private void init() {
+		String dingtalkDevopsRobotWebhook = devopsDeployProperties.getDingtalkDevopsRobotWebhook();
+		dingTalkClient = new DefaultDingTalkClient(dingtalkDevopsRobotWebhook);
+	}
 	
 	/**
 	 * 重新部署
@@ -52,22 +62,32 @@ public class DevopsService {
 	 */
 	public Result<?> redeploy(String url, EnvEnum envEnum) {
 		// 1. 处理请求异常
-		SendResult sendResult;
+		OapiRobotSendResponse oapiRobotSendResponse;
 		try {
 			// 发送请求
 			redeployRequest(url, envEnum);
 			// 发送通知
-			sendResult = sendLinkMessage(url, envEnum);
+			oapiRobotSendResponse = sendLinkMessage(url, envEnum);
 		} catch (Exception e) {
 			// 发送失败通知
-			sendResult = sendTextMessage(url, envEnum);
+			oapiRobotSendResponse = sendTextMessage(url, envEnum);
 			// 打印请求异常
 			e.printStackTrace();
 		}
 		
-		// 2. 返回结果
-		System.out.println(sendResult);
-		return ResultInfo.success(sendResult);
+		// 2. 打印日志
+		JSONObject logInfo = new JSONObject();
+		boolean success = oapiRobotSendResponse.isSuccess();
+		Long errcode = oapiRobotSendResponse.getErrcode();
+		String errmsg = oapiRobotSendResponse.getErrmsg();
+		logInfo.put("success", success);
+		logInfo.put("errcode", errcode);
+		logInfo.put("errmsg", errmsg);
+		String ResultMsg = StrUtil.format("【钉钉】通知结果：{}", logInfo.toString());
+		Console.log(ResultMsg);
+		
+		// 3. 返回结果
+		return ResultInfo.success(ResultMsg);
 	}
 	
 	/**
@@ -76,14 +96,14 @@ public class DevopsService {
 	 * @param envEnum
 	 * @throws IOException 
 	 */
-	void redeployRequest(String url, EnvEnum envEnum) throws IOException {
+	private void redeployRequest(String url, EnvEnum envEnum) throws IOException {
 		String bearerToken = null;
 		if (envEnum == EnvEnum.DEV) {
-			bearerToken = envProperties.getDevBearerToken();
+			bearerToken = devopsDeployProperties.getDevBearerToken();
 		} else if (envEnum == EnvEnum.PRETEST) {
-			bearerToken = envProperties.getPretestBearerToken();
+			bearerToken = devopsDeployProperties.getPretestBearerToken();
 		} else if (envEnum == EnvEnum.MASTER) {
-			bearerToken = envProperties.getMasterBearerToken();
+			bearerToken = devopsDeployProperties.getMasterBearerToken();
 		}
 		
 		// 1. 获取工作负载信息
@@ -111,55 +131,92 @@ public class DevopsService {
 	}
 	
 	/**
-	 * 钉钉发送链接消息
-	 * @param url
-	 * @param envEnum
-	 * @return
-	 */
-	SendResult sendLinkMessage(String url, EnvEnum envEnum) {
-		String env = envEnum.name();
-		int beginIndex = url.lastIndexOf(":") + 1;
-		String workloadName = url.substring(beginIndex);
-		String workload_url = workloadApiUrlToWorkloadUrl(url);
-		String dateTime = DateUtils.get_y_M_d_H_m_s();
-        LinkMessage message = new LinkMessage();
-        message.setTitle("Rancher DevOps");
-        message.setMessageUrl(workload_url);
-		message.setText(dateTime + "\n哇哦...工作负载【" + workloadName + ":" + env + "】正在升级，赶快看看吧！");
-		String dingtalkDevopsRobotWebhook = constantProperties.getDingtalkDevopsRobotWebhook();
-        SendResult result = dingtalkChatbotClient.send(dingtalkDevopsRobotWebhook, message);
-        return result;
-    }
-    
-	/**
 	 * 钉钉发送文本消息
 	 * @param url
 	 * @param envEnum
 	 * @return
 	 */
-	SendResult sendTextMessage(String url, EnvEnum envEnum) {
+	private OapiRobotSendResponse sendTextMessage(String url, EnvEnum envEnum) {
+		// 1. 初始化文本消息
+		OapiRobotSendRequest request = new OapiRobotSendRequest();
+		request.setMsgtype("text");
+		OapiRobotSendRequest.Text text = new OapiRobotSendRequest.Text();
+		
+		// 2. 组装消息体
 		String env = envEnum.name();
 		int beginIndex = url.lastIndexOf(":") + 1;
 		String workloadName = url.substring(beginIndex);
 		String workload_url = workloadApiUrlToWorkloadUrl(url);
-		String workloadApiUrl = constantProperties.getWorkloadApiUrl();
+		String workloadApiUrl = devopsDeployProperties.getWorkloadApiUrl();
 		String webhook_workload_url = workloadApiUrlToWorkloadUrl(workloadApiUrl);
 		String dateTime = DateUtils.get_y_M_d_H_m_s();
-		TextMessage message = new TextMessage(
+    	text.setContent(
 				dateTime
 				+ "\n警告...警告！工作负载【" + workloadName + ":" + env + "】升级失败...\n"
 				+ "请点击以下链接检查部署日志：\n"
 				+ webhook_workload_url + "\n"
 				+ "若需要手动进行工作负载升级，请访问如下地址：\n"
-				+ workload_url + "\n");
-		List<String> atMobiles = constantProperties.getDingtalkAtMobiles();
-		message.setAtMobiles(atMobiles);
-		String dingtalkDevopsRobotWebhook = constantProperties.getDingtalkDevopsRobotWebhook();
-		SendResult result = dingtalkChatbotClient.send(dingtalkDevopsRobotWebhook, message);
-		return result;
+				+ workload_url + "\n"
+    			);
+    	request.setText(text);
+    	
+    	// 3. 设置@人
+    	OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
+    	List<String> atMobiles = devopsDeployProperties.getDingtalkAtMobiles();
+    	at.setAtMobiles(atMobiles);
+    	request.setAt(at);
+    	
+    	// 4. 发送消息
+    	return sendRequest(request);
 	}
 	
-	String workloadApiUrlToWorkloadUrl(String url) {
+	/**
+	 * 钉钉发送链接消息
+	 * @param url
+	 * @param envEnum
+	 * @return
+	 */
+	private OapiRobotSendResponse sendLinkMessage(String url, EnvEnum envEnum) {
+		// 1. 初始化链接消息
+    	OapiRobotSendRequest request = new OapiRobotSendRequest();
+    	request.setMsgtype("link");
+    	OapiRobotSendRequest.Link link = new OapiRobotSendRequest.Link();
+    	
+    	// 2. 组装消息体
+		String env = envEnum.name();
+		int beginIndex = url.lastIndexOf(":") + 1;
+		String workloadName = url.substring(beginIndex);
+		String workload_url = workloadApiUrlToWorkloadUrl(url);
+		String dateTime = DateUtils.get_y_M_d_H_m_s();
+    	link.setMessageUrl(workload_url);
+    	link.setPicUrl("");
+    	link.setTitle("Rancher DevOps");
+    	link.setText(
+    			dateTime + "\n哇哦...工作负载【" + workloadName + ":" + env + "】正在升级，赶快看看吧！"
+    			);
+    	request.setLink(link);
+    	
+    	// 3. 发送消息
+    	return sendRequest(request);
+    }
+	
+	/**
+	 * 发送请求
+	 * @param request
+	 * @return
+	 */
+	private OapiRobotSendResponse sendRequest(OapiRobotSendRequest request) {
+		OapiRobotSendResponse oapiRobotSendResponse = null;
+    	try {
+    		oapiRobotSendResponse = dingTalkClient.execute(request);
+		} catch (ApiException e) {
+			e.printStackTrace();
+		}
+    	
+    	return oapiRobotSendResponse;
+	}
+    
+	private String workloadApiUrlToWorkloadUrl(String url) {
 		return url.replaceFirst("v3/project", "p").replaceFirst("workloads", "workload");
 	}
 	
