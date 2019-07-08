@@ -148,13 +148,12 @@ public class DevopsService {
 		String workloadName = url.substring(beginIndex);
 		String workload_url = workloadApiUrlToWorkloadUrl(url);
 		String workloadApiUrl = devopsDeployProperties.getWorkloadApiUrl();
-		String webhook_workload_url = workloadApiUrlToWorkloadUrl(workloadApiUrl);
 		String dateTime = DateUtils.get_y_M_d_H_m_s();
     	text.setContent(
 				dateTime
 				+ "\n警告...警告！工作负载【" + workloadName + ":" + env + "】升级失败...\n"
 				+ "请点击以下链接检查部署日志：\n"
-				+ webhook_workload_url + "\n"
+				+ workloadApiUrl + "\n"
 				+ "若需要手动进行工作负载升级，请访问如下地址：\n"
 				+ workload_url + "\n"
     			);
