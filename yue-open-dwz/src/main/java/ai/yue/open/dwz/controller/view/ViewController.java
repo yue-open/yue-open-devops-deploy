@@ -8,8 +8,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ai.yue.library.base.util.ObjectUtils;
+import ai.yue.library.data.redis.client.User;
 import ai.yue.open.dwz.constant.RoleEnum;
+import ai.yue.open.dwz.dataobject.AdminDO;
 import ai.yue.open.dwz.service.AdminService;
 import ai.yue.open.dwz.service.DwzService;
 
@@ -20,6 +21,8 @@ import ai.yue.open.dwz.service.DwzService;
 @Controller
 public class ViewController {
 	
+	@Autowired
+	User user;
 	@Autowired
 	DwzService dwzService;
 	@Autowired
@@ -32,12 +35,13 @@ public class ViewController {
 	
 	@GetMapping("/index")
 	public String index(HttpSession session, ModelMap modelMap) {
-		Long userId = (Long) session.getAttribute("userId");
-		String username = (String) session.getAttribute("username");
-		String role_name = (String) session.getAttribute("role_name");
-		modelMap.addAttribute("userId", userId);
+		AdminDO adminDO = user.getUser(AdminDO.class);
+		Long user_id = adminDO.getUser_id();
+		String username = adminDO.getUsername();
+		RoleEnum role = adminDO.getRole();
+		modelMap.addAttribute("userId", user_id);
 		modelMap.addAttribute("username", username);
-		modelMap.addAttribute("role_name", role_name);
+		modelMap.addAttribute("role_name", role.name());
 		return "/index";
 	}
 	
@@ -58,8 +62,8 @@ public class ViewController {
 	}
 	
 	@GetMapping("/admin/list")
-	public String adminList(HttpSession session) {
-		RoleEnum roleEnum = ObjectUtils.toJavaObject(session.getAttribute("role_name"), RoleEnum.class);
+	public String adminList() {
+		RoleEnum roleEnum = user.getUser(AdminDO.class).getRole();
 		if (roleEnum == RoleEnum.普通管理员) {
 			return "/index";
 		}

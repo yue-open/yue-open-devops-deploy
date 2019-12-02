@@ -1,41 +1,26 @@
 package ai.yue.open.dwz.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.alibaba.fastjson.JSONObject;
 
 import ai.yue.library.base.util.MapUtils;
-import ai.yue.library.data.jdbc.client.DB;
 import ai.yue.library.data.jdbc.constant.DBExpectedValueModeEnum;
+import ai.yue.library.data.jdbc.dao.DBTDAO;
 import ai.yue.library.data.jdbc.ipo.PageIPO;
-import ai.yue.library.data.jdbc.vo.PageVO;
+import ai.yue.library.data.jdbc.vo.PageTVO;
+import ai.yue.open.dwz.dataobject.AdminDO;
 
 /**
- * @author  孙金川
- * @version 创建时间：2018年3月21日
+ * @author	ylyue
+ * @since	2018年3月21日
  */
 @Repository
-public class AdminDAO {
+public class AdminDAO extends DBTDAO<AdminDO> {
 	
-	@Autowired
-	DB db;
-	
-	/**
-	 * 插入数据
-	 * @param paramJson
-	 * @return 
-	 */
-	public Long insert(JSONObject paramJson) {
-		return db.insert("admin", paramJson);
-	}
-	
-	/**
-	 * 更新-ById
-	 * @param paramJson
-	 */
-	public void updateById(JSONObject paramJson) {
-		db.updateById("admin", paramJson);
+	@Override
+	protected String tableName() {
+		return "dwz_admin";
 	}
 	
 	/**
@@ -56,14 +41,6 @@ public class AdminDAO {
 		String sql = "UPDATE admin SET password = :password WHERE id = :id AND password = :oldPassword";
 		int expectedValue = 1;
 		db.update(sql, paramJson, expectedValue, DBExpectedValueModeEnum.等于);
-	}
-	
-	/**
-	 * 删除
-	 * @param id
-	 */
-	public void delete(Long id) {
-		db.delete("admin", id);
 	}
 	
 	/**
@@ -113,12 +90,12 @@ public class AdminDAO {
 	 * @param password
 	 * @return
 	 */
-	public JSONObject get(String username, String password) {
+	public AdminDO get(String username, String password) {
 		JSONObject paramJson = new JSONObject();
 		paramJson.put("username", username);
 		paramJson.put("password", password);
 		String sql = "SELECT id, role_name FROM admin WHERE username = :username AND password = :password";
-		return db.queryForJson(sql, paramJson);
+		return db.queryForObject(sql, paramJson, mappedClass);
 	}
 	
 	/**
@@ -126,7 +103,7 @@ public class AdminDAO {
 	 * @param pageIPO
 	 * @return
 	 */
-	public PageVO page(PageIPO pageIPO) {
+	public PageTVO<AdminDO> page(PageIPO pageIPO) {
 		JSONObject conditions = pageIPO.getConditions();
 		StringBuffer whereSql  = new StringBuffer();
 		String[] keys = {"start_date", "end_date"};
@@ -140,7 +117,7 @@ public class AdminDAO {
 			}
 		}
 		
-		return db.pageWhere("he_campus_dwz", whereSql .toString(), pageIPO);
+		return db.pageWhere(tableName(), whereSql .toString(), pageIPO, mappedClass);
 	}
 	
 }

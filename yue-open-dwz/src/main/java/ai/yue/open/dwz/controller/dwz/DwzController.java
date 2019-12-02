@@ -5,55 +5,50 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.unbescape.uri.UriEscape;
 
 import com.alibaba.fastjson.JSONObject;
 
-import ai.yue.library.base.config.properties.ConstantProperties;
-import ai.yue.library.base.util.RSAUtils;
+import ai.yue.library.base.crypto.client.SecureSingleton;
 import ai.yue.library.base.util.StringUtils;
 import ai.yue.library.base.view.Result;
 import ai.yue.library.base.view.ResultInfo;
+import ai.yue.open.dwz.config.properties.DwzProperties;
 import ai.yue.open.dwz.dao.DwzDAO;
 import ai.yue.open.dwz.service.DwzService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author  孙金川
- * @version 创建时间：2018年3月20日
+ * @author	ylyue
+ * @since	2018年3月20日
  */
 @Slf4j
 @RestController
 public class DwzController {
 
 	@Autowired
+	DwzDAO dwzDAO;
+	@Autowired
 	DwzService dwzService;
 	@Autowired
-	DwzDAO dwzDAO;
-	@Value("${admin.key}")
-	String adminKey;
-	@Value("${admin.keyt}")
-	String adminKeyt;
-	@Autowired
-	ConstantProperties constantProperties;
+	DwzProperties dwzProperties;
 	
 	/**
 	 * 生成短网址并返回
-	 * @param message
+	 * @param messageBody
 	 * @return
 	 */
 	@PostMapping("/shorten")
-	Result<?> shorten(@RequestBody String message) {
+	Result<?> shorten(@RequestBody String messageBody) {
 		// 1. 解析加密报文
-		String str = RSAUtils.decrypt(UriEscape.unescapeUriFragmentId(message), constantProperties.getRsa_private_keyt());
-		JSONObject json = JSONObject.parseObject(str);
+		JSONObject json = SecureSingleton.rsaUriDecodingAndDecrypt(messageBody);
 		// 2. 提取鉴权信息
+		String adminKey = dwzProperties.getAdmin_key();
+		String adminKeyt = dwzProperties.getAdmin_keyt();
 		if (!adminKey.equals(json.getString("adminKey")) || !adminKeyt.equals(json.getString("adminKeyt"))) {
 			return ResultInfo.forbidden();
 		}

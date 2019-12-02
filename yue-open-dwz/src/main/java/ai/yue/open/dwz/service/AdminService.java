@@ -8,26 +8,25 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 
-import ai.yue.library.base.config.properties.ConstantProperties;
-import ai.yue.library.base.util.AESUtils;
+import ai.yue.library.base.crypto.client.SecureSingleton;
 import ai.yue.library.base.util.MapUtils;
 import ai.yue.library.base.util.ParamUtils;
 import ai.yue.library.base.view.Result;
 import ai.yue.library.base.view.ResultInfo;
+import ai.yue.library.base.view.ResultPrompt;
 import ai.yue.library.data.jdbc.ipo.PageIPO;
 import ai.yue.open.dwz.dao.AdminDAO;
+import ai.yue.open.dwz.dataobject.AdminDO;
 
 /**
- * @author  孙金川
- * @version 创建时间：2018年3月21日
+ * @author	孙金川
+ * @since	2018年3月21日
  */
 @Service
 public class AdminService {
 
 	@Autowired
 	AdminDAO adminDAO;
-	@Autowired
-	ConstantProperties constantProperties;
 	
 	/**
 	 * 插入数据
@@ -42,12 +41,12 @@ public class AdminService {
 		// 2. 处理参数
 		MapUtils.trimStringValues(paramJson);
 		String username = paramJson.getString("username");
-		String password = AESUtils.encrypt(paramJson.getString("password"), constantProperties.getAes_keyt());
+		String password = paramJson.getString("password");
+		password = SecureSingleton.getAES().encryptBase64(password);
 		paramJson.replace("password", password);
 		if (adminDAO.isAdminExist(username)) {
-			return ResultInfo.user_exist();
+			return ResultInfo.dev_defined(ResultPrompt.USER_EXIST);
 		}
-		paramJson.put("admin_status", 1);
 		
 		// 3. 插入数据
 		adminDAO.insert(paramJson);
@@ -61,7 +60,7 @@ public class AdminService {
 	 * @param paramJson
 	 * @return
 	 */
-	public Result<List<JSONObject>> page(JSONObject paramJson) {
+	public Result<List<AdminDO>> page(JSONObject paramJson) {
 		PageIPO pageIPO = PageIPO.parsePageIPO(paramJson);
 		return adminDAO.page(pageIPO).toResult();
 	}

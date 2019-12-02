@@ -1,7 +1,20 @@
+server:
+  port: 8080
+  tomcat:
+    port-header: GET, POST, PUT, DELETE
 spring:
+  application:
+    name: yue-open-dwz
   profiles:
     active:
     - dev
-server:
-  tomcat:
-    port-header: GET, POST, PUT, DELETE
+  jackson:
+    time-zone: GMT+8
+  devtools: 
+    restart: 
+      log-condition-evaluation-delta: false
+  main:
+    allow-bean-definition-overriding: true
+logging:
+  level:
+    druid.sql.Statement: DEBUG
