@@ -42,5 +42,4 @@
   * [账户同步常见问题](常见问题/账户同步常见问题.md)
   * [什么是单点登录](常见问题/什么是单点登录.md)
 
-* [更多](更多.md)
 * [Changelog<sup style="color:red">(new)<sup>](changelog.md)
