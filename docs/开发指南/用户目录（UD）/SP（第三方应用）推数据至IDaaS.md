@@ -12,17 +12,21 @@ IDaaS提供一些UD同步的接口API（所有的API都是遵循SCIM协议的）
 
 ![获取client-id和client-secret](SP（第三方应用）推数据至IDaaS_files/1.png)
 
-## 接口列表：
+## 接口列表
 - 获取access_token
 
 以下是关于组织机构操作的API，包括：
+
 - 推送组织机构
 - 修改或移动组织机构
 - 删除组织机构
 - 查询组织机构
 - 获取组织机构列表
+- 获取根节点组织机构信息
+- 获取组织机构的直属子级
 
 以下是关于账户操作的API，包括：
+
 - 推送账户
 - 修改或移动账户
 - 删除账户
@@ -36,9 +40,9 @@ IDaaS提供一些UD同步的接口API（所有的API都是遵循SCIM协议的）
 - 删除账户组
 
 其他：
-- 获取用户已经授权的应用列表
+- 获取应用已经授权的组织机构及账户列表
 
-## 具体接口：
+## 具体接口
 ### 获取access_token
 调用以下API接口时，需要先获取access_token，调用接口时传入access_token有两种方式：
 - URL值后：URL?access_token={access_token}
