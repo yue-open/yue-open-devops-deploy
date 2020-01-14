@@ -5,16 +5,21 @@ IDaaS提供一些UD同步的接口API（所有的API都是遵循SCIM协议的）
 ### 1.获取IDaaS-Base-URL
 文档中的“IDaaS-Base-URL”需要替换为当前访问地址的主域，文中接口地址前也都需要替换主域地址。主域为IDaaS控制台中的用户访问的Portal的sso地址。
 
-### 2.获取client-id和client-secret
-获取access_token时需要使用client-id和client-secret，我们可以在管理员控制台获取到。
+### 2.使用access_token调用接口
+调用 IDaaS API接口时，需要先获取access_token，调用接口时传入access_token有两种方式：
+- URL值后：URL?access_token={access_token}
+- Header里面：Authorization bearer {access_token}（注意 bearer与access_token之间的空格）
 
-在管理员控制台添加一个应用，在应用的详情中可以启动API,API的两个值对应client-id和client-secret.
+access_token分为两种类型：
+- 以 /api/enduser 开头URL的API使用的access_token，代表的是一个用户登录后的access_token
+- 以 /api/application 开头URL的API使用的access_token： 获取方式是向下面的URL进行POST请求，请求将返回json包含access_token：`{IDaaS-Base-URL}/oauth/token?client_id={client-id}&client_secret={client-secret}&scope=read&grant_type=client_credentials` client_id和client_secret即为创建应用中的API Key和APi Secret
 
-![获取client-id和client-secret](SP（第三方应用）推数据至IDaaS_files/1.png)
+开发者需要根据使用的API明确区分这2种Token：
+
+!> 第一种 access_token 可获得用户信息，适用于需要记录用户操作等信息的场景<br>
+第二种 access_token 以服务器作为通信集成，数据变更只能记录到具体应用信息，但大部分UD场景使用的都是这种方式
 
 ## 接口列表
-- 获取access_token
-
 以下是关于组织机构操作的API，包括：
 
 - 推送组织机构
@@ -43,17 +48,6 @@ IDaaS提供一些UD同步的接口API（所有的API都是遵循SCIM协议的）
 - 获取应用已经授权的组织机构及账户列表
 
 ## 具体接口
-### 获取access_token
-调用以下API接口时，需要先获取access_token，调用接口时传入access_token有两种方式：
-- URL值后：URL?access_token={access_token}
-- Header里面：Authorization bearer {access_token}（注意 bearer与access_token之间的空格）
-
-access_token分为两种类型：
-- 以 /api/enduser 开头URL的API使用的access_token，代表的是一个用户登录后的access_token
-- 以 /api/application 开头URL的API使用的access_token： 获取方式是向下面的URL进行POST请求，请求将返回json包含access_token：
-	- `{IDaaS-Base-URL}/oauth/token?client_id={client-id}&client_secret={client-secret}&scope=read&grant_type=client_credentials` client_id和client_secret即为创建应用中的API Key和APi Secret
-	- 开发者需要根据使用的API明确区分这2种Token，大部分UD功能使用的都是后一种返回的access_token。
-
 ### 推送组织机构
 在SP中添加一个组织机构，调用此接口，将新添加的组织机构的信息同步到IDaaS。
 

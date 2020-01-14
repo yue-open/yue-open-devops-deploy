@@ -1,4 +1,4 @@
-![logo](_images/logo.png)
+![logo](_images/logo.png ':size=256x256')
 
 # 慧耀云服务中台文档
 
