@@ -8,9 +8,9 @@
 **账户同步：**<br>
 Portal平台支持 SCIM 协议，账户同步机制支持两种方式：
 
-1. SP业务系统提供接口：Portal平台通过业务系统提供的API，将Portal中的账户信息同步到应用服务器（即SP Service Provider），如下图中第1步所示；
+1. `SP业务系统提供接口`：Portal平台通过业务系统提供的API，将Portal中的账户信息同步到应用服务器（即SP Service Provider），如下图中第1步所示；
 
-2. Portal平台提供接口：Portal系统提供API，应用服务器（即SP Service Provider）调用Portal平台API接口将业务账户信息同步到Portal中，如下图中第2步所示：
+2. `Portal平台提供接口`：Portal系统提供API，应用服务器（即SP Service Provider）调用Portal平台API接口将业务账户信息同步到Portal中，如下图中第2步所示：
 ![UD的推和拉](用户目录（UD）同步概述_files/1.jpg)
 <center>UD的推和拉</center><br>
 
