@@ -1,7 +1,14 @@
-# Eclipse
+# Eclipse and STS
 .project
 .classpath
 .settings/
+.sts4-cache/
+
+# idea ignore
+.idea/
+*.ipr
+*.iml
+*.iws
 
 # Maven
 target/
@@ -20,13 +27,6 @@ buildNumber.properties
 # Gradle
 .gradle/
 build/
-
-#IDEA
-# idea ignore
-.idea/
-*.ipr
-*.iml
-*.iws
 
 # temp ignore
 *.log
