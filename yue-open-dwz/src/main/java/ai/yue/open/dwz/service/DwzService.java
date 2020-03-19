@@ -56,7 +56,7 @@ public class DwzService {
 			}
 			index++;
 			if (index > 5) {
-				return ResultInfo.frequent_access_restriction();
+				return ResultInfo.tooManyRequests();
 			}
 		}
 		

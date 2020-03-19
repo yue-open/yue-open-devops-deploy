@@ -20,10 +20,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hqz.ai.doc.http.file.server.config.FileServerProperties;
 
-import ai.yue.library.base.util.HttpUtils;
 import ai.yue.library.base.util.StringUtils;
 import ai.yue.library.base.util.URIUtils;
 import ai.yue.library.base.util.UUIDUtils;
+import ai.yue.library.base.util.servlet.ServletUtils;
 import ai.yue.library.base.view.Result;
 import ai.yue.library.base.view.ResultInfo;
 import cn.hutool.core.convert.Convert;
@@ -58,20 +58,20 @@ public class FileController {
 			@RequestParam("projectName") String projectName) {
 		// 1. 参数校验
 		if (ArrayUtil.isEmpty(files)) {
-			return ResultInfo.file_empty();
+			return ResultInfo.fileEmpty();
 		}
 		
 		// 2. 确认支持上传的项目
 		List<String> project_name_list = fileServerProperties.getProjectName();
 		if (!ArrayUtil.contains(Convert.toStrArray(project_name_list), projectName)) {
-			return ResultInfo.param_value_invalid(projectName);
+			return ResultInfo.paramValueInvalid(projectName);
 		}
 		
 		// 3. 获得文件信息
 		String file_server_home = fileServerProperties.getFileServerHome();
 		int index = 0;
 		JSONArray fileAddressJSONArray = new JSONArray();
-		String serverDownloadURL = HttpUtils.getServerURL() + "/file/download/";
+		String serverDownloadURL = ServletUtils.getServerURL() + "/file/download/";
 		try {
 			for (MultipartFile multipartFile : files) {
 				// 4. 获得文件名后缀

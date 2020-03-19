@@ -45,7 +45,7 @@ public class AdminService {
 		password = SecureSingleton.getAES().encryptBase64(password);
 		paramJson.replace("password", password);
 		if (adminDAO.isAdminExist(username)) {
-			return ResultInfo.dev_defined(ResultPrompt.USER_EXIST);
+			return ResultInfo.devCustomTypePrompt(ResultPrompt.USER_EXIST);
 		}
 		
 		// 3. 插入数据

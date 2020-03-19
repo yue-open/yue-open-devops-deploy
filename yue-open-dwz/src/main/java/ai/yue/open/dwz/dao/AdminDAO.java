@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import ai.yue.library.base.util.MapUtils;
 import ai.yue.library.data.jdbc.constant.DBExpectedValueModeEnum;
-import ai.yue.library.data.jdbc.dao.DBTDAO;
+import ai.yue.library.data.jdbc.dao.AbstractRepository;
 import ai.yue.library.data.jdbc.ipo.PageIPO;
 import ai.yue.library.data.jdbc.vo.PageTVO;
 import ai.yue.open.dwz.dataobject.AdminDO;
@@ -16,7 +16,7 @@ import ai.yue.open.dwz.dataobject.AdminDO;
  * @since	2018年3月21日
  */
 @Repository
-public class AdminDAO extends DBTDAO<AdminDO> {
+public class AdminDAO extends AbstractRepository<AdminDO> {
 	
 	@Override
 	protected String tableName() {
@@ -30,7 +30,7 @@ public class AdminDAO extends DBTDAO<AdminDO> {
 	 */
 	public Long updateByUsername(JSONObject paramJson) {
 		String[] conditions = {"username"};
-		return db.update("admin", paramJson, conditions);
+		return db.update(tableName, paramJson, conditions);
 	}
 	
 	/**
@@ -38,7 +38,7 @@ public class AdminDAO extends DBTDAO<AdminDO> {
 	 * @param paramJson
 	 */
 	public void updatePassword(JSONObject paramJson) {
-		String sql = "UPDATE admin SET password = :password WHERE id = :id AND password = :oldPassword";
+		String sql = "UPDATE dwz_admin SET password = :password WHERE id = :id AND password = :oldPassword";
 		int expectedValue = 1;
 		db.update(sql, paramJson, expectedValue, DBExpectedValueModeEnum.等于);
 	}
@@ -51,7 +51,7 @@ public class AdminDAO extends DBTDAO<AdminDO> {
 	public boolean isAdminExist(String username) {
 		JSONObject paramJson = new JSONObject();
 		paramJson.put("username", username);
-		String sql = "SELECT id FROM admin WHERE username = :username";
+		String sql = "SELECT id FROM dwz_admin WHERE username = :username";
 		int size = db.queryForList(sql, paramJson).size();
 		if (size <= 0) {
 			return false;
@@ -68,7 +68,7 @@ public class AdminDAO extends DBTDAO<AdminDO> {
 	public boolean isAdminStatus(String username) {
 		JSONObject paramJson = new JSONObject();
 		paramJson.put("username", username);
-		String sql = "SELECT admin_status FROM admin WHERE username = :username";
+		String sql = "SELECT admin_status FROM dwz_admin WHERE username = :username";
 		return db.queryForJson(sql, paramJson).getBoolean("admin_status");
 	}
 	
@@ -80,7 +80,7 @@ public class AdminDAO extends DBTDAO<AdminDO> {
 	public JSONObject getEdit(Long id) {
 		JSONObject paramJson = new JSONObject();
 		paramJson.put("id", id);
-		String sql = "SELECT username, role_name FROM admin WHERE id = :id";
+		String sql = "SELECT username, role_name FROM dwz_admin WHERE id = :id";
 		return db.queryForJson(sql, paramJson);
 	}
 	
@@ -94,7 +94,7 @@ public class AdminDAO extends DBTDAO<AdminDO> {
 		JSONObject paramJson = new JSONObject();
 		paramJson.put("username", username);
 		paramJson.put("password", password);
-		String sql = "SELECT id, role_name FROM admin WHERE username = :username AND password = :password";
+		String sql = "SELECT id, role_name FROM dwz_admin WHERE username = :username AND password = :password";
 		return db.queryForObject(sql, paramJson, mappedClass);
 	}
 	

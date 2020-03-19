@@ -2,13 +2,12 @@ package ai.yue.open.dwz.dao;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.alibaba.fastjson.JSONObject;
 
 import ai.yue.library.base.util.MapUtils;
-import ai.yue.library.data.jdbc.client.DB;
+import ai.yue.library.data.jdbc.dao.AbstractDAO;
 import ai.yue.library.data.jdbc.ipo.PageIPO;
 import ai.yue.library.data.jdbc.vo.PageVO;
 
@@ -17,34 +16,11 @@ import ai.yue.library.data.jdbc.vo.PageVO;
  * @version 创建时间：2018年3月20日
  */
 @Repository
-public class DwzDAO {
+public class DwzDAO extends AbstractDAO {
 
-	@Autowired
-	DB db;
-	
-	/**
-	 * 插入短网址
-	 * @param paramJson
-	 * @return 
-	 */
-	public Long insert(JSONObject paramJson) {
-		return db.insert("dwz", paramJson);
-	}
-	
-	/**
-	 * 更新-ById
-	 * @param paramJson
-	 */
-	public void updateById(JSONObject paramJson) {
-		db.updateById("dwz", paramJson);
-	}
-	
-	/**
-	 * 删除
-	 * @param id
-	 */
-	public void delete(Long id) {
-		db.delete("dwz", id);
+	@Override
+	protected String tableName() {
+		return "dwz";
 	}
 	
 	/**
@@ -124,7 +100,7 @@ public class DwzDAO {
 			}
 		}
 		
-		return db.pageWhere("dwz", whereSql.toString(), pageIPO);
+		return db.pageWhere(tableName, whereSql.toString(), pageIPO);
 	}
 	
 }

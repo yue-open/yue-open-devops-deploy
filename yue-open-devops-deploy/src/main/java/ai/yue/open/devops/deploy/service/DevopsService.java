@@ -148,7 +148,7 @@ public class DevopsService {
 		String workloadName = url.substring(beginIndex);
 		String workload_url = workloadApiUrlToWorkloadUrl(url);
 		String workloadApiUrl = devopsDeployProperties.getWorkloadApiUrl();
-		String dateTime = DateUtils.get_y_M_d_H_m_s();
+		String dateTime = DateUtils.getDatetimeFormatter();
     	text.setContent(
 				dateTime
 				+ "\n警告...警告！工作负载【" + workloadName + ":" + env + "】升级失败...\n"
@@ -186,7 +186,7 @@ public class DevopsService {
 		int beginIndex = url.lastIndexOf(":") + 1;
 		String workloadName = url.substring(beginIndex);
 		String workload_url = workloadApiUrlToWorkloadUrl(url);
-		String dateTime = DateUtils.get_y_M_d_H_m_s();
+		String dateTime = DateUtils.getDatetimeFormatter();
     	link.setMessageUrl(workload_url);
     	link.setPicUrl("");
     	link.setTitle("Rancher DevOps");

@@ -66,10 +66,10 @@ public class LoginController {
         paramJson.replace("password", password);
         AdminDO userDO = adminDAO.get(username, password);
         if (userDO == null) {
-        	return ResultInfo.dev_defined(ResultPrompt.USERNAME_OR_PASSWORD_ERROR);
+        	return ResultInfo.devCustomTypePrompt(ResultPrompt.USERNAME_OR_PASSWORD_ERROR);
         }
 		if (!adminDAO.isAdminStatus(username)) {
-			return ResultInfo.dev_defined(ResultPrompt.USER_STOP);
+			return ResultInfo.devCustomTypePrompt(ResultPrompt.USER_STOP);
 		}
 		
 		// 4. 登录
