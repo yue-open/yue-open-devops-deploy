@@ -14,6 +14,10 @@ docker build --tag registry.cn-hangzhou.aliyuncs.com/yl-yue/yue-open-devops-depl
 
 docker push registry.cn-hangzhou.aliyuncs.com/yl-yue/yue-open-devops-deploy:%version%
 
+docker tag registry.cn-hangzhou.aliyuncs.com/yl-yue/yue-open-devops-deploy:%version% ylyue/yue-open-devops-deploy:%version%
+
+docker push ylyue/yue-open-devops-deploy:%version%
+
 echo.
 goto end
 
