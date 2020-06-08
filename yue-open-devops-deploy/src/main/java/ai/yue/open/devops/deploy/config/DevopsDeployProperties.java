@@ -22,14 +22,20 @@ public class DevopsDeployProperties {
 	private String dingtalkDevopsRobotWebhook;
 	
 	/**
+	 * 钉钉DevOps机器人密钥，机器人安全设置页面，加签一栏下面显示的SEC开头的字符串
+	 */
+	private String dingtalkDevopsRobotSignSecret;
+	
+	/**
 	 * 钉钉通知@群成员手机号
 	 */
 	private List<String> dingtalkAtMobiles;
 	
 	/**
-	 * Rancher 工作负载API地址
+	 * <p>yue-open-devops-deploy 部署在 Rancher 中的工作负载地址
+	 * <p>用于快速查看 yue-open-devops-deploy 容器日志，有助于方便排查 CD 失败时的异常详情。
 	 */
-	private String workloadApiUrl;
+	private String yueOpenDevopsDeployWorkloadUrl;
 	
 	/**
 	 * Rancher 开发环境 bearerToken
