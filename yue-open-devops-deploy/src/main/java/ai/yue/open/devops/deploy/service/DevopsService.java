@@ -220,8 +220,15 @@ public class DevopsService {
         try {
             String dingtalkDevopsRobotWebhook = devopsDeployProperties.getDingtalkDevopsRobotWebhook();
             String dingtalkDevopsRobotSignSecret = devopsDeployProperties.getDingtalkDevopsRobotSignSecret();
-            DingTalkClient dingTalkClient = new DefaultDingTalkClient(SecureCommon.dingtalkRobotSign(dingtalkDevopsRobotWebhook, dingtalkDevopsRobotSignSecret));
-            oapiRobotSendResponse = dingTalkClient.execute(request);
+            
+			DingTalkClient dingTalkClient;
+			if (StrUtil.isNotEmpty(dingtalkDevopsRobotSignSecret)) {
+				dingTalkClient = new DefaultDingTalkClient(SecureCommon.dingtalkRobotSign(dingtalkDevopsRobotWebhook, dingtalkDevopsRobotSignSecret));
+			} else {
+				dingTalkClient = new DefaultDingTalkClient(dingtalkDevopsRobotWebhook);
+			}
+            
+			oapiRobotSendResponse = dingTalkClient.execute(request);
         } catch (ApiException e) {
             e.printStackTrace();
         }

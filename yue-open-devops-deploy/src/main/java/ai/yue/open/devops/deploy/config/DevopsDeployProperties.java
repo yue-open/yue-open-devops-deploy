@@ -23,6 +23,7 @@ public class DevopsDeployProperties {
 	
 	/**
 	 * 钉钉DevOps机器人密钥，机器人安全设置页面，加签一栏下面显示的SEC开头的字符串
+	 * <p>不采用加签验证时可不填
 	 */
 	private String dingtalkDevopsRobotSignSecret;
 	
