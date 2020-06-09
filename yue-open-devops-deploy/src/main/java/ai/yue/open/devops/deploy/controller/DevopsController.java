@@ -33,7 +33,7 @@ public class DevopsController {
 	@PutMapping("/redeploy")
 	public Result<?> redeploy(@RequestParam("workloadApiUrl") String workloadApiUrl,
 								@RequestParam("envEnum") EnvEnum envEnum,
-								@RequestParam("tag") String tag) {
+								@RequestParam(name = "tag", required = false) String tag) {
 		// 1. 打印日志
 		JSONObject logInfo = new JSONObject();
 		logInfo.put("workloadApiUrl", workloadApiUrl);
