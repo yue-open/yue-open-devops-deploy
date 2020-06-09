@@ -32,7 +32,8 @@ public class DevopsController {
 	 */
 	@PutMapping("/redeploy")
 	public Result<?> redeploy(@RequestParam("workloadApiUrl") String workloadApiUrl,
-								@RequestParam("envEnum") EnvEnum envEnum) {
+								@RequestParam("envEnum") EnvEnum envEnum,
+							  	@RequestParam("tag")String tag) {
 		// 1. 打印日志
 		JSONObject logInfo = new JSONObject();
 		logInfo.put("workloadApiUrl", workloadApiUrl);
@@ -40,7 +41,7 @@ public class DevopsController {
 		Console.log("【工作负载-重新部署】请求参数：{}", logInfo);
 		
 		// 2. 重新部署
-		return devopsService.redeploy(workloadApiUrl, envEnum);
+		return devopsService.redeploy(workloadApiUrl, envEnum,tag);
 	}
 	
 }
