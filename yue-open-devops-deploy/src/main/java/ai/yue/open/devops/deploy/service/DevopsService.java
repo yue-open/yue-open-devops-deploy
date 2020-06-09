@@ -6,8 +6,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import ai.yue.library.base.util.StringUtils;
-import com.alibaba.fastjson.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.DingTalkClient;
@@ -27,6 +26,7 @@ import com.taobao.api.ApiException;
 
 import ai.yue.library.base.crypto.client.SecureCommon;
 import ai.yue.library.base.util.DateUtils;
+import ai.yue.library.base.util.StringUtils;
 import ai.yue.library.base.view.Result;
 import ai.yue.library.base.view.ResultInfo;
 import ai.yue.open.devops.deploy.config.DevopsDeployProperties;
@@ -35,8 +35,10 @@ import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 
 /**
- * @author 孙金川
- * @version 创建时间：2018年11月12日
+ * Rancher CD
+ * 
+ * @author	ylyue
+ * @since	2018年11月12日
  */
 @Service
 public class DevopsService {
@@ -80,7 +82,7 @@ public class DevopsService {
         logInfo.put("errmsg", errmsg);
         String ResultMsg = StrUtil.format("【钉钉】通知结果：{}", logInfo.toString());
         Console.log(ResultMsg);
-
+        
         // 3. 返回结果
         return ResultInfo.success(ResultMsg);
     }
@@ -116,7 +118,7 @@ public class DevopsService {
         annotations.replace("cattle.io/timestamp", cattle_io_timestamp);
         body.replace("annotations", annotations);
 
-        //如果版本信息不为空，替换镜像值
+		// 如果版本信息不为空，替换镜像值
         if (StringUtils.isNotEmpty(tag)) {
             JSONArray containersArray = body.getJSONArray("containers");
             JSONObject containers = containersArray.getJSONObject(0);
