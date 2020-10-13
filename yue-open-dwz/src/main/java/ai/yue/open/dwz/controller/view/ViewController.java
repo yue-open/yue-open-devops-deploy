@@ -8,7 +8,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ai.yue.library.data.redis.client.User;
+import ai.yue.library.auth.service.client.User;
 import ai.yue.open.dwz.constant.RoleEnum;
 import ai.yue.open.dwz.dataobject.AdminDO;
 import ai.yue.open.dwz.service.AdminService;

@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 
+import ai.yue.library.auth.service.client.User;
 import ai.yue.library.base.crypto.client.SecureSingleton;
 import ai.yue.library.base.crypto.config.properties.CryptoProperties;
 import ai.yue.library.base.util.CurrentLineInfo;
 import ai.yue.library.base.util.ParamUtils;
+import ai.yue.library.base.view.R;
 import ai.yue.library.base.view.Result;
-import ai.yue.library.base.view.ResultInfo;
 import ai.yue.library.base.view.ResultPrompt;
-import ai.yue.library.data.redis.client.User;
 import ai.yue.open.dwz.constant.RoleEnum;
 import ai.yue.open.dwz.dao.AdminDAO;
 import ai.yue.open.dwz.dataobject.AdminDO;
@@ -66,10 +66,10 @@ public class LoginController {
         paramJson.replace("password", password);
         AdminDO userDO = adminDAO.get(username, password);
         if (userDO == null) {
-        	return ResultInfo.devCustomTypePrompt(ResultPrompt.USERNAME_OR_PASSWORD_ERROR);
+        	return R.errorPrompt(ResultPrompt.USERNAME_OR_PASSWORD_ERROR);
         }
 		if (!adminDAO.isAdminStatus(username)) {
-			return ResultInfo.devCustomTypePrompt(ResultPrompt.USER_STOP);
+			return R.errorPrompt(ResultPrompt.USER_STOP);
 		}
 		
 		// 4. 登录
@@ -87,7 +87,7 @@ public class LoginController {
 		log.info("class_method={}", LoginController.class.getName() + "." + CurrentLineInfo.getMethodName() + "()");
 		
 		// 6. 返回结果
-		return ResultInfo.success(userDO);
+		return R.success(userDO);
 	}
 	
 	/**

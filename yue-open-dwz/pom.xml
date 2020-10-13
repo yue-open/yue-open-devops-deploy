@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>ai.ylyue</groupId>
 		<artifactId>yue-library-dependencies</artifactId>
-		<version>2.1.0-SNAPSHOT</version>
+		<version>j11.2.3.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>yue-open-dwz</artifactId>
 	<name>yue-open-dwz</name>
@@ -15,6 +15,11 @@
 		<dependency>
 			<groupId>ai.ylyue</groupId>
 			<artifactId>yue-library-base-crypto</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>ai.ylyue</groupId>
+			<artifactId>yue-library-auth-service</artifactId>
 		</dependency>
 		
 		<dependency>

@@ -4,8 +4,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import ai.yue.library.base.ipo.CaptchaIPO;
-import ai.yue.library.base.util.CaptchaUtils;
+import ai.yue.library.web.ipo.CaptchaIPO;
+import ai.yue.library.web.util.CaptchaUtils;
 
 /**
  * @author  孙金川

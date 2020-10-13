@@ -15,8 +15,8 @@ import com.alibaba.fastjson.JSONObject;
 
 import ai.yue.library.base.crypto.client.SecureSingleton;
 import ai.yue.library.base.util.StringUtils;
+import ai.yue.library.base.view.R;
 import ai.yue.library.base.view.Result;
-import ai.yue.library.base.view.ResultInfo;
 import ai.yue.open.dwz.config.properties.DwzProperties;
 import ai.yue.open.dwz.dao.DwzDAO;
 import ai.yue.open.dwz.service.DwzService;
@@ -50,7 +50,7 @@ public class DwzController {
 		String adminKey = dwzProperties.getAdmin_key();
 		String adminKeyt = dwzProperties.getAdmin_keyt();
 		if (!adminKey.equals(json.getString("adminKey")) || !adminKeyt.equals(json.getString("adminKeyt"))) {
-			return ResultInfo.forbidden();
+			return R.forbidden();
 		}
 		
 		String originalUrl = json.getString("url");

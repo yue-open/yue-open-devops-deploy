@@ -11,8 +11,8 @@ import com.alibaba.fastjson.JSONObject;
 import ai.yue.library.base.crypto.client.SecureSingleton;
 import ai.yue.library.base.util.MapUtils;
 import ai.yue.library.base.util.ParamUtils;
+import ai.yue.library.base.view.R;
 import ai.yue.library.base.view.Result;
-import ai.yue.library.base.view.ResultInfo;
 import ai.yue.library.base.view.ResultPrompt;
 import ai.yue.library.data.jdbc.ipo.PageIPO;
 import ai.yue.open.dwz.dao.AdminDAO;
@@ -45,14 +45,14 @@ public class AdminService {
 		password = SecureSingleton.getAES().encryptBase64(password);
 		paramJson.replace("password", password);
 		if (adminDAO.isAdminExist(username)) {
-			return ResultInfo.devCustomTypePrompt(ResultPrompt.USER_EXIST);
+			return R.errorPrompt(ResultPrompt.USER_EXIST);
 		}
 		
 		// 3. 插入数据
 		adminDAO.insert(paramJson);
 		
 		// 4. 返回结果
-		return ResultInfo.success();
+		return R.success();
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class AdminService {
 	 */
 	public Result<?> updateById(JSONObject paramJson) {
 		adminDAO.updateById(paramJson);
-		return ResultInfo.success();
+		return R.success();
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class AdminService {
 	 */
 	public Result<?> updatePassword(JSONObject paramJson) {
 		adminDAO.updatePassword(paramJson);
-		return ResultInfo.success();
+		return R.success();
 	}
 	
 	/**
@@ -101,7 +101,7 @@ public class AdminService {
 	 */
 	public Result<?> delete(Long id) {
 		adminDAO.delete(id);
-		return ResultInfo.success();
+		return R.success();
 	}
 	
 }

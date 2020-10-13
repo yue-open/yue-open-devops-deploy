@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import com.alibaba.fastjson.JSONObject;
 
 import ai.yue.library.base.util.MapUtils;
-import ai.yue.library.data.jdbc.constant.DBExpectedValueModeEnum;
+import ai.yue.library.data.jdbc.constant.DbExpectedValueModeEnum;
 import ai.yue.library.data.jdbc.dao.AbstractRepository;
 import ai.yue.library.data.jdbc.ipo.PageIPO;
 import ai.yue.library.data.jdbc.vo.PageTVO;
@@ -40,7 +40,7 @@ public class AdminDAO extends AbstractRepository<AdminDO> {
 	public void updatePassword(JSONObject paramJson) {
 		String sql = "UPDATE dwz_admin SET password = :password WHERE id = :id AND password = :oldPassword";
 		int expectedValue = 1;
-		db.update(sql, paramJson, expectedValue, DBExpectedValueModeEnum.等于);
+		db.update(sql, paramJson, expectedValue, DbExpectedValueModeEnum.EQUAL);
 	}
 	
 	/**

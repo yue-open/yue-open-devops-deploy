@@ -11,7 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import ai.yue.library.base.util.ParamUtils;
 import ai.yue.library.base.util.UUIDUtils;
 import ai.yue.library.base.view.Result;
-import ai.yue.library.base.view.ResultInfo;
+import ai.yue.library.base.view.R;
 import ai.yue.library.data.jdbc.ipo.PageIPO;
 import ai.yue.open.dwz.dao.DwzDAO;
 
@@ -43,7 +43,7 @@ public class DwzService {
 		List<JSONObject> dwzList = dwzDAO.getDwz(url);
 		if (dwzList.size() > 0) {
 			String dwz = domainName + dwzList.get(0).get("dwz_code");
-			return ResultInfo.success(dwz);
+			return R.success(dwz);
 		}
 		
 		// 3. 获得唯一短网址后缀编码
@@ -56,7 +56,7 @@ public class DwzService {
 			}
 			index++;
 			if (index > 5) {
-				return ResultInfo.tooManyRequests();
+				return R.tooManyRequests();
 			}
 		}
 		
@@ -67,7 +67,7 @@ public class DwzService {
 		
 		// 5. 返回短网址
 		String dwz = domainName + dwz_code;
-		return ResultInfo.success(dwz);
+		return R.success(dwz);
 	}
 	
 	/**
@@ -77,7 +77,7 @@ public class DwzService {
 	 */
 	public Result<?> updateById(JSONObject paramJson) {
 		dwzDAO.updateById(paramJson);
-		return ResultInfo.success();
+		return R.success();
 	}
 	
 	/**
@@ -87,7 +87,7 @@ public class DwzService {
 	 */
 	public Result<?> delete(Long id) {
 		dwzDAO.delete(id);
-		return ResultInfo.success();
+		return R.success();
 	}
 	
 	/**
@@ -96,7 +96,7 @@ public class DwzService {
 	 * @return
 	 */
 	public Result<JSONObject> getEdit(Long id) {
-		return ResultInfo.success(dwzDAO.getEdit(id));
+		return R.success(dwzDAO.getEdit(id));
 	}
 	
 	/**

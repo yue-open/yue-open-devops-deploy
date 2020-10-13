@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import ai.yue.library.auth.service.client.User;
 import ai.yue.library.base.exception.AttackException;
 import ai.yue.library.base.exception.ForbiddenException;
-import ai.yue.library.base.util.NetUtils;
-import ai.yue.library.base.util.servlet.ServletUtils;
-import ai.yue.library.data.redis.client.User;
+import ai.yue.library.web.util.NetUtils;
+import ai.yue.library.web.util.servlet.ServletUtils;
 import ai.yue.open.dwz.constant.RoleEnum;
 import ai.yue.open.dwz.dataobject.AdminDO;
 import cn.hutool.core.util.ArrayUtil;
