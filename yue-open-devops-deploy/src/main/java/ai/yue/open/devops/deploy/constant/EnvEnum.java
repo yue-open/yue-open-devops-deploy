@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * @author  孙金川
- * @version 创建时间：2018年11月15日
+ * 环境定义
+ *
+ * @author ylyue
+ * @since 2018年11月15日
  */
 @Getter
 @AllArgsConstructor

@@ -1,21 +1,21 @@
 package ai.yue.open.devops.deploy.controller;
 
+import ai.yue.library.base.view.Result;
+import ai.yue.open.devops.deploy.constant.EnvEnum;
+import ai.yue.open.devops.deploy.service.DevopsService;
+import cn.hutool.core.lang.Console;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSONObject;
-
-import ai.yue.library.base.view.Result;
-import ai.yue.open.devops.deploy.constant.EnvEnum;
-import ai.yue.open.devops.deploy.service.DevopsService;
-import cn.hutool.core.lang.Console;
-
 /**
- * @author  孙金川
- * @version 创建时间：2018年11月12日
+ * Rancher CD
+ *
+ * @author ylyue
+ * @since 2018年11月12日
  */
 @RestController
 @RequestMapping("/devops")

@@ -1,15 +1,16 @@
 package ai.yue.open.devops.deploy.config;
 
-import java.util.List;
-
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import lombok.Data;
+import java.util.List;
 
 /**
- * @author 	孙金川
- * @version 创建时间：2018年11月6日
+ * 配置属性定义
+ *
+ * @author ylyue
+ * @since 2018年11月6日
  */
 @Data
 @Configuration
