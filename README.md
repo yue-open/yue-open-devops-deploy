@@ -5,7 +5,7 @@ yue-open-devops-deploy基于yue-library开发，所有配置项皆可通过docke
 
 ## docker启动
 ### 配置项说明
-|配置项													|配置项说明																	|示例配置																					|
+|<div style="width:300px">配置项</div>					|<div style="width:250px">配置项说明</div>									|示例配置																					|
 |--														|--																			|--																							|
 |`server.port`											|容器内部端口号																|默认：9999																					|
 |`yue-open-devops-deploy-workload-url`					|`yue-open-devops-deploy`在Rancher中的工作负载访问地址，用于钉钉通知时点击	|https://192.168.3.50/p/c-jrhf8:p-rg7dh/workload/deployment:default:yue-open-devops-deploy	|
@@ -49,11 +49,11 @@ docker run -d -e key=value -p9999:9999 --name=yue-open-devops-deploy ylyue/yue-o
 
 > 接口地址：PUT /devops/redeploy
 
-|参数名			|是否必填参数	|参数作用说明															|参数值示例																					|
-|--				|--				|--																		|--																							|
-|workloadApiUrl	|是				|Rancher工作负载的ApiUrl（需要通知Rancher进行重新部署的工作负载）		|https://192.168.3.50/v3/project/c-nc2j5:p-rfgdc/workloads/deployment:pretest-sc-mdp:mdp-log|
-|envEnum		|是				|环境（`DEV`, `PRETEST`, `MASTER`），需要配置对应的Rancher bearerToken	|PRETEST																					|
-|tag			|否				|镜像版本																|2.0.1																						|
+|<div style="width:110px">参数名</div>	|是否必填参数	|<div style="width:250px">参数作用说明</div>							|参数值示例																					|
+|--										|--				|--																		|--																							|
+|workloadApiUrl							|是				|Rancher工作负载的ApiUrl（需要通知Rancher进行重新部署的工作负载）		|https://192.168.3.50/v3/project/c-nc2j5:p-rfgdc/workloads/deployment:pretest-sc-mdp:mdp-log|
+|envEnum								|是				|环境（`DEV`, `PRETEST`, `MASTER`），需要配置对应的Rancher bearerToken	|PRETEST																					|
+|tag									|否				|镜像版本																|2.0.1																						|
 
 请求示例：
 ```shell
