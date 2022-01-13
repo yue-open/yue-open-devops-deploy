@@ -1,21 +1,15 @@
 package ai.yue.open.devops.deploy.service;
 
-import java.io.IOException;
-import java.net.URI;
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
+import ai.yue.library.base.crypto.client.SecureCommon;
+import ai.yue.library.base.exception.ParamException;
+import ai.yue.library.base.util.DateUtils;
+import ai.yue.library.base.util.MapUtils;
+import ai.yue.library.base.util.StringUtils;
+import ai.yue.library.base.view.R;
+import ai.yue.library.base.view.Result;
+import ai.yue.open.devops.deploy.config.DevopsDeployProperties;
+import cn.hutool.core.lang.Console;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dingtalk.api.DefaultDingTalkClient;
@@ -23,16 +17,17 @@ import com.dingtalk.api.DingTalkClient;
 import com.dingtalk.api.request.OapiRobotSendRequest;
 import com.dingtalk.api.response.OapiRobotSendResponse;
 import com.taobao.api.ApiException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import ai.yue.library.base.crypto.client.SecureCommon;
-import ai.yue.library.base.util.DateUtils;
-import ai.yue.library.base.util.StringUtils;
-import ai.yue.library.base.view.Result;
-import ai.yue.library.base.view.ResultInfo;
-import ai.yue.open.devops.deploy.config.DevopsDeployProperties;
-import ai.yue.open.devops.deploy.constant.EnvEnum;
-import cn.hutool.core.lang.Console;
-import cn.hutool.core.util.StrUtil;
+import java.net.URI;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Rancher CD
@@ -53,21 +48,20 @@ public class DevopsService {
     /**
      * 重新部署
      *
-     * @param workloadApiUrl 请求的路径
-     * @param envEnum        环境信息
-     * @param tag            版本
-     * @return
+     * @param workloadApiUrl  需要重新部署的工作负载API地址
+     * @param bearerTokenName 配置在yue-open-devops-deploy中，所对应的bearerToken名
+     * @param imageTag        docker镜像版本
      */
-    public Result<?> redeploy(String workloadApiUrl, EnvEnum envEnum, String tag) {
+    public Result<?> redeploy(String workloadApiUrl, String bearerTokenName, String imageTag) {
         // 1. 处理请求异常
         OapiRobotSendResponse oapiRobotSendResponse;
         try {
             // 发送请求
-            redeployRequest(workloadApiUrl, envEnum, tag);
+            redeployRequest(workloadApiUrl, bearerTokenName, imageTag);
             // 发送通知
-            oapiRobotSendResponse = sendLinkMessage(workloadApiUrl, envEnum);
+            oapiRobotSendResponse = sendLinkMessage(workloadApiUrl, bearerTokenName);
         } catch (Exception e) {
-			oapiRobotSendResponse = sendTextMessage(workloadApiUrl, envEnum);
+			oapiRobotSendResponse = sendTextMessage(workloadApiUrl, bearerTokenName);
             // 打印请求异常
             e.printStackTrace();
         }
@@ -80,38 +74,35 @@ public class DevopsService {
         logInfo.put("success", success);
         logInfo.put("errcode", errcode);
         logInfo.put("errmsg", errmsg);
-        String ResultMsg = StrUtil.format("【钉钉】通知结果：{}", logInfo.toString());
-        Console.log(ResultMsg);
+        String resultMsg = StrUtil.format("【钉钉】通知结果：{}", logInfo.toString());
+        Console.log(resultMsg);
         
         // 3. 返回结果
-        return ResultInfo.success(ResultMsg);
+        return R.success(resultMsg);
     }
 
     /**
      * 重新部署请求
      *
-     * @param workloadApiUrl 请求的路径
-     * @param envEnum        环境信息
-     * @param tag            版本标签
-     * @throws IOException
+     * @param workloadApiUrl  需要重新部署的工作负载API地址
+     * @param bearerTokenName 配置在yue-open-devops-deploy中，所对应的bearerToken名
+     * @param imageTag        docker镜像版本
      */
-    private void redeployRequest(String workloadApiUrl, EnvEnum envEnum, String tag) throws IOException {
-        String bearerToken = null;
-        if (envEnum == EnvEnum.DEV) {
-            bearerToken = devopsDeployProperties.getDevBearerToken();
-        } else if (envEnum == EnvEnum.PRETEST) {
-            bearerToken = devopsDeployProperties.getPretestBearerToken();
-        } else if (envEnum == EnvEnum.MASTER) {
-            bearerToken = devopsDeployProperties.getMasterBearerToken();
+    private void redeployRequest(String workloadApiUrl, String bearerTokenName, String imageTag) {
+        // 1. 获取bearerToken
+        Map<String, String> bearerTokens = devopsDeployProperties.getBearerTokens();
+        String bearerToken = MapUtils.getString(bearerTokens, bearerTokenName);
+        if (StrUtil.isBlank(bearerToken)) {
+            throw new ParamException("无效的bearerTokenName，获取不到对应的bearerToken");
         }
 
-        // 1. 获取工作负载信息
+        // 2. 获取工作负载信息
         RequestEntity<Void> requestEntity = RequestEntity.get(URI.create(workloadApiUrl))
                 .header(HttpHeaders.AUTHORIZATION, bearerToken)
                 .build();
         ResponseEntity<JSONObject> result = restTemplate.exchange(requestEntity, JSONObject.class);
 
-        // 2. 替换请求参数
+        // 3. 替换请求参数
         JSONObject body = result.getBody();
         String cattle_io_timestamp = LocalDateTime.now(Clock.systemUTC()).format(DateUtils.FORMATTER) + "Z";
         JSONObject annotations = body.getJSONObject("annotations");
@@ -119,18 +110,18 @@ public class DevopsService {
         body.replace("annotations", annotations);
 
 		// 如果版本信息不为空，替换镜像值
-        if (StringUtils.isNotEmpty(tag)) {
+        if (StringUtils.isNotEmpty(imageTag)) {
             JSONArray containersArray = body.getJSONArray("containers");
             JSONObject containers = containersArray.getJSONObject(0);
             String image = containers.getString("image");
             int index = image.lastIndexOf(':');
-            containers.replace("image", image.substring(0, index) + ":" + tag);
+            containers.replace("image", image.substring(0, index) + ":" + imageTag);
         }
 
-        // 3. 重新部署工作负载
+        // 4. 重新部署工作负载
         RequestEntity<JSONObject> redeployRequestEntity = RequestEntity.put(URI.create(workloadApiUrl))
                 .header(HttpHeaders.AUTHORIZATION, bearerToken)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(body);
         ResponseEntity<String> redeployResponseEntity = restTemplate.exchange(redeployRequestEntity, String.class);
         if (redeployResponseEntity.getStatusCode() != HttpStatus.OK) {
@@ -140,19 +131,14 @@ public class DevopsService {
 
     /**
      * 钉钉发送文本消息
-     *
-     * @param workloadApiUrl
-     * @param envEnum
-     * @return
      */
-    private OapiRobotSendResponse sendTextMessage(String workloadApiUrl, EnvEnum envEnum) {
+    private OapiRobotSendResponse sendTextMessage(String workloadApiUrl, String bearerTokenName) {
         // 1. 初始化文本消息
         OapiRobotSendRequest request = new OapiRobotSendRequest();
         request.setMsgtype("text");
         OapiRobotSendRequest.Text text = new OapiRobotSendRequest.Text();
 
         // 2. 组装消息体
-        String env = envEnum.name();
         int beginIndex = workloadApiUrl.lastIndexOf(":") + 1;
         String workloadName = workloadApiUrl.substring(beginIndex);
         String workloadUrl = workloadApiUrlToWorkloadUrl(workloadApiUrl);
@@ -160,7 +146,7 @@ public class DevopsService {
         String dateTime = DateUtils.getDatetimeFormatter();
         text.setContent(
                 dateTime
-                        + "\n警告...警告！工作负载【" + workloadName + ":" + env + "】升级失败...\n"
+                        + "\n警告...警告！工作负载【" + workloadName + ":" + bearerTokenName + "】升级失败...\n"
                         + "请点击以下链接检查 " + applicationName + " 部署日志：\n"
                         + yueOpenDevopsDeployWorkloadUrl + "\n"
                         + "若需要手动进行工作负载升级，请访问如下地址：\n"
@@ -180,19 +166,14 @@ public class DevopsService {
 
     /**
      * 钉钉发送链接消息
-     *
-     * @param workloadApiUrl
-     * @param envEnum
-     * @return
      */
-    private OapiRobotSendResponse sendLinkMessage(String workloadApiUrl, EnvEnum envEnum) {
+    private OapiRobotSendResponse sendLinkMessage(String workloadApiUrl, String bearerTokenName) {
         // 1. 初始化链接消息
         OapiRobotSendRequest request = new OapiRobotSendRequest();
         request.setMsgtype("link");
         OapiRobotSendRequest.Link link = new OapiRobotSendRequest.Link();
 
         // 2. 组装消息体
-        String env = envEnum.name();
         int beginIndex = workloadApiUrl.lastIndexOf(":") + 1;
         String workloadName = workloadApiUrl.substring(beginIndex);
         String workloadUrl = workloadApiUrlToWorkloadUrl(workloadApiUrl);
@@ -201,7 +182,7 @@ public class DevopsService {
         link.setPicUrl("");
         link.setTitle("Rancher DevOps");
         link.setText(
-                dateTime + "\n哇哦...工作负载【" + workloadName + ":" + env + "】正在升级，赶快看看吧！"
+                dateTime + "\n哇哦...工作负载【" + workloadName + ":" + bearerTokenName + "】正在升级，赶快看看吧！"
         );
         request.setLink(link);
 
@@ -211,9 +192,6 @@ public class DevopsService {
 
     /**
      * 发送请求
-     *
-     * @param request
-     * @return
      */
     private OapiRobotSendResponse sendRequest(OapiRobotSendRequest request) {
         OapiRobotSendResponse oapiRobotSendResponse = null;
@@ -227,7 +205,7 @@ public class DevopsService {
 			} else {
 				dingTalkClient = new DefaultDingTalkClient(dingtalkDevopsRobotWebhook);
 			}
-            
+
 			oapiRobotSendResponse = dingTalkClient.execute(request);
         } catch (ApiException e) {
             e.printStackTrace();

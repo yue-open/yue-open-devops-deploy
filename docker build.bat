@@ -8,7 +8,7 @@ set /p version=请输入docker镜像版本号:
 
 echo 请输入阿里云docker镜像仓库登录密码
 
-docker login --username=862618889@qq.com registry.cn-hangzhou.aliyuncs.com
+docker login --username=yl-yue@qq.com registry.cn-hangzhou.aliyuncs.com
 
 docker build --tag registry.cn-hangzhou.aliyuncs.com/yl-yue/yue-open-devops-deploy:%version% .
 

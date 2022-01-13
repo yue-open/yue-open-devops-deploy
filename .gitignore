@@ -1,3 +1,7 @@
+# yue-library ignore
+*confidential*.yml
+*confidential*.properties
+
 # IDE ignore
 rebel.xml
 

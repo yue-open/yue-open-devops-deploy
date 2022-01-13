@@ -1,10 +1,20 @@
-server:  port: 9999spring:  application:    name: yue-open-devops-deploy
-yue:
-  devops:
-    deploy:
-        yue-open-devops-deploy-workload-url: https://192.168.3.50/p/c-jrhf8:p-rg7dh/workload/deployment:default:yue-open-devops-deploy
-        dev-bearer-token: Bearer token-47f49:s8jvl9hcvrcg9r9jcrft7cgdzf2qrngfm4s9sf6xs75qtx7zhhb5xg
-        pretest-bearer-token: Bearer token-4www5:7ckp26rkxb8nfzgv2ms6vw7zzb4tlfgtxknpksj7bfkm6pgtqd77l2
-        master-bearer-token: Bearer token-4www5:7ckp26rkxb8nfzgv2ms6vw7zzb4tlfgtxknpksj7bfkm6pgtqd77l2        dingtalk-devops-robot-webhook: https://oapi.dingtalk.com/robot/send?access_token=773defcf7560b363d05f2986806e909a0c9f8a285a526daa0b48e949c21f2e5a
-        dingtalk-devops-robot-sign-secret: SECcb73a2de6d5176a1526df1157413f1d207e380f024351c04a46f1850dde14b22        dingtalk-at-mobiles:
-        - 18523146316
+server:
+  port: 9999
+spring:
+  application:
+    name: yue-open-devops-deploy
+  profiles:
+    group:
+      "confidential": "confidential"
+    active: confidential
+#yue:
+#  devops:
+#    deploy:
+#        bearer-tokens:
+#          dev: Bearer token-47f49:s8jvl9hcvrcg9r9jcrft7cgdzf2qrngfm4s9sf6xs75qtx7zhhb5xg
+#          test: Bearer token-47f49:s8jvl9hcvrcg9r9jcrft7cgdzf2qrngfm4s9sf6xs75qtx7zhhb5xg
+#        yue-open-devops-deploy-workload-url: https://192.168.3.50/p/c-jrhf8:p-rg7dh/workload/deployment:default:yue-open-devops-deploy
+#        dingtalk-devops-robot-webhook: https://oapi.dingtalk.com/robot/send?access_token=773defcf7560b363d05f2986806e909a0c9f8a285a526daa0b48e949c21f2e5a
+#        dingtalk-devops-robot-sign-secret: SECcb73a2de6d5176a1526df1157413f1d207e380f024351c04a46f1850dde14b22
+#        dingtalk-at-mobiles:
+#        - 18523155555
