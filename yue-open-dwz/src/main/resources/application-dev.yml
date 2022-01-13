@@ -1,14 +1,0 @@
-spring:
-  datasource: 
-    druid: 
-      url: jdbc:mysql://localhost:3306/yue_open?characterEncoding=utf-8&useSSL=false
-      username: root
-      password: 123456
-      filter: 
-        slf4j:
-          enabled: true
-          statement-prepare-after-log-enabled: false
-          statement-execute-query-after-log-enabled: false
-          statement-executable-sql-log-enable: true
-  thymeleaf: # thymeleaf 静态资源配置    cache: false # 关闭缓存及时刷新，上线生产环境需要改为true
-    mode: LEGACYHTML5
