@@ -59,9 +59,9 @@ public class DevopsService {
             // 发送请求
             redeployRequest(workloadApiUrl, bearerTokenName, imageTag);
             // 发送通知
-            oapiRobotSendResponse = sendLinkMessage(workloadApiUrl, bearerTokenName);
+            oapiRobotSendResponse = sendLinkMessage(workloadApiUrl, bearerTokenName, imageTag);
         } catch (Exception e) {
-			oapiRobotSendResponse = sendTextMessage(workloadApiUrl, bearerTokenName);
+			oapiRobotSendResponse = sendTextMessage(workloadApiUrl, bearerTokenName, imageTag);
             // 打印请求异常
             e.printStackTrace();
         }
@@ -130,44 +130,9 @@ public class DevopsService {
     }
 
     /**
-     * 钉钉发送文本消息
-     */
-    private OapiRobotSendResponse sendTextMessage(String workloadApiUrl, String bearerTokenName) {
-        // 1. 初始化文本消息
-        OapiRobotSendRequest request = new OapiRobotSendRequest();
-        request.setMsgtype("text");
-        OapiRobotSendRequest.Text text = new OapiRobotSendRequest.Text();
-
-        // 2. 组装消息体
-        int beginIndex = workloadApiUrl.lastIndexOf(":") + 1;
-        String workloadName = workloadApiUrl.substring(beginIndex);
-        String workloadUrl = workloadApiUrlToWorkloadUrl(workloadApiUrl);
-        String yueOpenDevopsDeployWorkloadUrl = devopsDeployProperties.getYueOpenDevopsDeployWorkloadUrl();
-        String dateTime = DateUtils.getDatetimeFormatter();
-        text.setContent(
-                dateTime
-                        + "\n警告...警告！工作负载【" + workloadName + ":" + bearerTokenName + "】升级失败...\n"
-                        + "请点击以下链接检查 " + applicationName + " 部署日志：\n"
-                        + yueOpenDevopsDeployWorkloadUrl + "\n"
-                        + "若需要手动进行工作负载升级，请访问如下地址：\n"
-                        + workloadUrl + "\n"
-        );
-        request.setText(text);
-
-        // 3. 设置@人
-        OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
-        List<String> atMobiles = devopsDeployProperties.getDingtalkAtMobiles();
-        at.setAtMobiles(atMobiles);
-        request.setAt(at);
-
-        // 4. 发送消息
-        return sendRequest(request);
-    }
-
-    /**
      * 钉钉发送链接消息
      */
-    private OapiRobotSendResponse sendLinkMessage(String workloadApiUrl, String bearerTokenName) {
+    private OapiRobotSendResponse sendLinkMessage(String workloadApiUrl, String bearerTokenName, String imageTag) {
         // 1. 初始化链接消息
         OapiRobotSendRequest request = new OapiRobotSendRequest();
         request.setMsgtype("link");
@@ -182,11 +147,46 @@ public class DevopsService {
         link.setPicUrl("");
         link.setTitle("Rancher DevOps");
         link.setText(
-                dateTime + "\n哇哦...工作负载【" + workloadName + ":" + bearerTokenName + "】正在升级，赶快看看吧！"
+                dateTime + "\n哇哦...工作负载【" + workloadName + ":" + bearerTokenName + ":" + imageTag + "】正在升级，赶快看看吧！"
         );
         request.setLink(link);
 
         // 3. 发送消息
+        return sendRequest(request);
+    }
+
+    /**
+     * 钉钉发送文本消息
+     */
+    private OapiRobotSendResponse sendTextMessage(String workloadApiUrl, String bearerTokenName, String imageTag) {
+        // 1. 初始化文本消息
+        OapiRobotSendRequest request = new OapiRobotSendRequest();
+        request.setMsgtype("text");
+        OapiRobotSendRequest.Text text = new OapiRobotSendRequest.Text();
+
+        // 2. 组装消息体
+        int beginIndex = workloadApiUrl.lastIndexOf(":") + 1;
+        String workloadName = workloadApiUrl.substring(beginIndex);
+        String workloadUrl = workloadApiUrlToWorkloadUrl(workloadApiUrl);
+        String yueOpenDevopsDeployWorkloadUrl = devopsDeployProperties.getYueOpenDevopsDeployWorkloadUrl();
+        String dateTime = DateUtils.getDatetimeFormatter();
+        text.setContent(
+                dateTime
+                        + "\n警告...警告！工作负载【" + workloadName + ":" + bearerTokenName + ":" + imageTag + "】升级失败...\n"
+                        + "请点击以下链接检查 " + applicationName + " 部署日志：\n"
+                        + yueOpenDevopsDeployWorkloadUrl + "\n"
+                        + "若需要手动进行工作负载升级，请访问如下地址：\n"
+                        + workloadUrl + "\n"
+        );
+        request.setText(text);
+
+        // 3. 设置@人
+        OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
+        List<String> atMobiles = devopsDeployProperties.getDingtalkAtMobiles();
+        at.setAtMobiles(atMobiles);
+        request.setAt(at);
+
+        // 4. 发送消息
         return sendRequest(request);
     }
 
