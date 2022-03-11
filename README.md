@@ -63,5 +63,15 @@ curl -X PUT http://192.168.0.11:9999/devops/redeploy -d 'workloadApiUrl=https://
 curl -X PUT ${yueOpenRedeployUrl} -d `workloadApiUrl=`${workloadApiUrl}'&bearerTokenName='${bearerTokenName}'&imageTag='${DATETIME}
 ```
 
-## 历史推荐版本
+## 版本历史
+### 1.1.1
+- 钉钉通知加入imageTag，方便docker镜像版本追溯
+
+### 1.1.0
+yodd加入yue-open项目集后，正式推出的第一个规范化版本：
+- 优化API接口传参
+- 优化环境变量参数命名
+- 重构文档与示例
+
+### 历史推荐版本
 [1.0.2](https://gitee.com/yue-open/yue-open-devops-deploy/tree/master/docs)
