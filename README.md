@@ -1,3 +1,37 @@
+<p align="center">
+	<a target="_blank" href="https://ylyue.cn/">
+		<img src="https://dcloud.ylyue.cn/yue-library/_images/logo.png" width="400">
+	</a>
+</p>
+<p align="center">
+	<strong>提供Rancher持续部署能力</strong>
+</p>
+<p align="center">
+	<a target="_blank" href="https://ylyue.cn/">
+		<img src="https://img.shields.io/badge/文档-yue-blue.svg?style=flat-square" alt="yue-library官网">
+	</a>
+	<a target="_blank" href="https://www.apache.org/licenses/LICENSE-2.0.html">
+		<img alt="GitHub" src="https://img.shields.io/github/license/yue-open/yue-open-devops-deploy?style=flat-square">
+	</a>
+	<a target="_blank" href="https://gitee.com/yue-open/yue-open-devops-deploy">
+		<img src='https://gitee.com/yue-open/yue-open-devops-deploy/badge/star.svg?theme=dark' alt='gitee star'>
+	</a>
+	<a target="_blank" href='https://github.com/yue-open/yue-open-devops-deploy'>
+		<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/yue-open/yue-open-devops-deploy?style=social">
+	</a>
+	<a target="_blank" href="https://github.com/yue-open/yue-open-devops-deploy/issues">
+		<img alt="GitHub issues" src="https://img.shields.io/github/issues/yue-open/yue-open-devops-deploy?style=flat-square">
+	</a>
+</p>
+<p align="center">
+	-- 主页：<a href="https://ylyue.cn">https://ylyue.cn/</a> --
+</p>
+<p align="center">
+	-- QQ群：<a href="https://jq.qq.com/?_wv=1027&k=5WI2Vbb">883630899</a> --
+</p>
+
+-------------------------------------------------------------------------------
+
 # yue-open-devops-deploy
 提供Rancher持续部署能力，通知Rancher进行工作负载重新部署（用于docker镜像版本更新后，在Pod配置不变的情况下，更新拉取最新（或指定版本）的镜像）。
 
