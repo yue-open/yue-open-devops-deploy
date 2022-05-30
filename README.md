@@ -5,14 +5,14 @@ yue-open-devops-deploy基于yue-library开发，所有配置项皆可通过docke
 
 ## docker启动
 ### 配置项说明
-|<div style="width:250px">配置项</div>					|必填	|<div style="width:350px">配置项说明</div>																										|示例配置																					|
-|--														|--		|--																																				|--																							|
-|`server.port`											|否		|容器内部端口号																																	|默认：9999																					|
-|`yue.devops.deploy.bearer-tokens`						|是		|Rancher bearerToken（需自行在Rancher中设置） <br> ，用于调用Rancher API（格式：`key: value`）<br> 可填多个，发起 `/devops/redeploy` 请求时必要	|`dev: Bearer token-47f49:s8jvl9hcvrcg9r9jcrft7cgdzf2qrngfm4s9sf6xs75qtx7zhhb5xg`			|
-|`yue.devops.deploy.yue-open-devops-deploy-workload-url`|否		|`yue-open-devops-deploy`在Rancher中的工作负载访问地址，用于钉钉通知时点击																		|https://192.168.3.50/p/c-jrhf8:p-rg7dh/workload/deployment:default:yue-open-devops-deploy	|
-|`yue.devops.deploy.dingtalk-devops-robot-webhook`		|否		|钉钉DevOps机器人Webhook																														|https://oapi.dingtalk.com/robot/send?access_token=**										|
-|`yue.devops.deploy.dingtalk-devops-robot-sign-secret`	|否		|钉钉DevOps机器人密钥																															|SECcb73a2de6d5176a2226df1157413f1d207e380f024351c04a46f1850dde14b22						|
-|`yue.devops.deploy.dingtalk-at-mobiles`				|否		|钉钉通知@群成员手机号																															|18511111111（多个`,`分割）																	|
+|<div style="width:250px">配置项</div>					|必填	|<div style="width:350px">配置项说明</div>																												|示例配置																					|
+|--														|--		|--																																						|--																							|
+|`server.port`											|否		|容器内部端口号																																			|默认：9999																					|
+|`yue.devops.deploy.bearer-tokens`						|是		|在Rancher UI中可创建API密钥（`bearerToken`） <br> ，用于调用Rancher API（格式：`key: value`）<br> ，在发起 `/devops/redeploy` 请求时需要用到，可填多个	|`dev: Bearer token-47f49:s8jvl9hcvrcg9r9jcrft7cgdzf2qrngfm4s9sf6xs75qtx7zhhb5xg`			|
+|`yue.devops.deploy.yue-open-devops-deploy-workload-url`|否		|`yue-open-devops-deploy`在Rancher UI中的工作负载访问地址，用于在发起`/devops/redeploy`请求出现异常时，将在钉钉通知中添加此地址（方便排查异常）			|https://192.168.3.50/p/c-jrhf8:p-rg7dh/workload/deployment:default:yue-open-devops-deploy	|
+|`yue.devops.deploy.dingtalk-devops-robot-webhook`		|否		|钉钉DevOps机器人Webhook																																|https://oapi.dingtalk.com/robot/send?access_token=**										|
+|`yue.devops.deploy.dingtalk-devops-robot-sign-secret`	|否		|钉钉DevOps机器人密钥																																	|SECcb73a2de6d5176a2226df1157413f1d207e380f024351c04a46f1850dde14b22						|
+|`yue.devops.deploy.dingtalk-at-mobiles`				|否		|钉钉通知@群成员手机号																																	|18511111111（多个`,`分割）																	|
 
 yml配置示例：
 ```yml
@@ -47,11 +47,11 @@ docker run -d -e key=value -p9999:9999 --name=yue-open-devops-deploy ylyue/yue-o
 
 > HTTP接口地址：PUT /devops/redeploy
 
-|<div style="width:110px">参数名</div>	|必填	|<div style="width:300px">参数作用说明</div>						|参数值示例																					|
-|--										|--		|--																	|--																							|
-|workloadApiUrl							|是		|Rancher工作负载的ApiUrl（需要通知Rancher进行重新部署的工作负载）	|https://192.168.3.50/v3/project/c-nc2j5:p-rfgdc/workloads/deployment:pretest-sc-mdp:mdp-log|
-|bearerTokenName						|是		|配置在yue-open-devops-deploy中，所对应的bearerToken名				|dev																						|
-|imageTag								|否		|镜像版本															|2.0.1																						|
+|<div style="width:110px">参数名</div>	|必填	|<div style="width:300px">参数作用说明</div>									|参数值示例																					|
+|--										|--		|--																				|--																							|
+|workloadApiUrl							|是		|工作负载的ApiUrl（Rancher2.5以前可在工作负载中直接查看，Rancher2.6+见下述详解）|https://192.168.3.50/v3/project/c-nc2j5:p-rfgdc/workloads/deployment:pretest-sc-mdp:mdp-log|
+|bearerTokenName						|是		|配置在yue-open-devops-deploy中，所对应的bearerToken名							|dev																						|
+|imageTag								|否		|镜像版本																		|2.0.1																						|
 
 完整请求示例：
 ```shell
@@ -62,6 +62,70 @@ curl -X PUT http://192.168.0.11:9999/devops/redeploy -d 'workloadApiUrl=https://
 ```shell
 curl -X PUT ${yueOpenRedeployUrl} -d `workloadApiUrl=`${workloadApiUrl}'&bearerTokenName='${bearerTokenName}'&imageTag='${DATETIME}
 ```
+
+### workloadApiUrl请求参数详解
+> Rancher2.x开始，默认的API端点为v3版本，<br>
+> 2.5之前可在工作负载中直接查看每个工作负载的API端点，<br>
+> 2.6之后虽然还是使用的v3 API，但Rancher UI中已经取消了每个工作负载API端点查看按钮（原因：普通用户很少用到），虽然按钮已取消，但功能任然可用，<br>
+> 因此2.x版本都可以通过API入口端口，逐一查看各自工作负载的API端点，当然你也可以不用了解这些，通过API端点统一的路径规则，替换为自己的`workloadApiUrl`。
+
+workloadApiUrl示例：`https://192.168.3.50/v3/project/c-nc2j5:p-rfgdc/workloads/deployment:pretest-sc-mdp:mdp-log`
+
+替换规则：`https://${rancherUrl}/v3/project/${clusterId}:${projectId}/workloads/deployment:${namespaceName}:${deploymentName}`
+
+替换规则变量详解：
+
+|变量				|说明																								|示例				|
+|--					|--																									|--					|
+|`rancherUrl`		|Rancher UI地址（不是默认端口时需要带端口）															|192.168.3.52:8080	|
+|`clusterId`		|集群ID（2.5在集群、项目等列表界面点击查看API获得，<br>2.6在集群、项目等列表界面点击查看YAML获得）	|c-nc2j5			|
+|`projectId`		|项目ID（2.5在项目列表界面点击查看API获得，<br>2.6在项目列表界面点击查看YAML获得）					|p-rfgdc			|
+|`namespaceName`	|命名空间名称																						|pretest-sc-mdp		|
+|`deploymentName`	|工作负载名称																						|mdp-log			|
+
+project API端点地址示例：`https://192.168.3.50/v3/project`
+- 你也可以访问project API端点，查看`clusterId`、`projectId`
+- 当然你也可以在里面查找到workload API端点
+- project API端点中的`data[0].id`属性（data是个数组），就是`clusterId:projectId`
+
+project API端点浏览器访问响应示例（已做精简）：
+```json
+{
+    "type": "collection",
+    "links": {},
+    "createTypes": {},
+    "actions": {},
+    "pagination": {},
+    "sort": {},
+    "filters": {},
+    "resourceType": "project",
+    "data": [
+        {
+            "actions": {},
+            "annotations": {},
+            "baseType": "project",
+            "clusterId": "c-m-8w6456qc",
+            "id": "c-m-8w6456qc:p-6t9fh",
+            "links": {
+                "replicaSets": "…/v3/projects/c-m-8w6456qc:p-6t9fh/replicasets",
+                "replicationControllers": "…/v3/projects/c-m-8w6456qc:p-6t9fh/replicationcontrollers",
+                "secrets": "…/v3/projects/c-m-8w6456qc:p-6t9fh/secrets",
+                "self": "…/v3/projects/c-m-8w6456qc:p-6t9fh",
+                "serviceAccountTokens": "…/v3/projects/c-m-8w6456qc:p-6t9fh/serviceaccounttokens",
+                "serviceMonitors": "…/v3/projects/c-m-8w6456qc:p-6t9fh/servicemonitors",
+                "workloads": "…/v3/projects/c-m-8w6456qc:p-6t9fh/workloads"
+            },
+            "name": "dev2",
+            "namespaceId": null,
+            "state": "active",
+            "type": "project",
+            "uuid": "0b067557-989b-4ee0-9f59-93d662ececdb"
+        }
+    ]
+}
+```
+
+点击`data.links.workloads`的url，可用进入workloads端点，找到对应的工作负载，便可获得`workloadApiUrl`
 
 ## 版本历史
 ### 1.1.1

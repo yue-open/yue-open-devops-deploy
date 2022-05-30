@@ -7,6 +7,7 @@ import ai.yue.library.base.util.MapUtils;
 import ai.yue.library.base.util.StringUtils;
 import ai.yue.library.base.view.R;
 import ai.yue.library.base.view.Result;
+import ai.yue.library.web.util.ServletUtils;
 import ai.yue.open.devops.deploy.config.DevopsDeployProperties;
 import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
@@ -94,6 +95,9 @@ public class DevopsService {
         String bearerToken = MapUtils.getString(bearerTokens, bearerTokenName);
         if (StrUtil.isBlank(bearerToken)) {
             throw new ParamException("无效的bearerTokenName，获取不到对应的bearerToken");
+        }
+        if (StrUtil.startWith(bearerToken, ServletUtils.BEARER_TYPE) == false) {
+            bearerToken = ServletUtils.BEARER_TYPE + bearerToken;
         }
 
         // 2. 获取工作负载信息
