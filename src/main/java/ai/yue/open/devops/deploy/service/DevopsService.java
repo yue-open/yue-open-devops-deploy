@@ -60,9 +60,9 @@ public class DevopsService {
             // 发送请求
             redeployRequest(workloadApiUrl, bearerTokenName, imageTag);
             // 发送通知
-            oapiRobotSendResponse = sendLinkMessage(workloadApiUrl, bearerTokenName, imageTag);
+            oapiRobotSendResponse = sendLinkMessage(workloadApiUrl, imageTag);
         } catch (Exception e) {
-			oapiRobotSendResponse = sendTextMessage(workloadApiUrl, bearerTokenName, imageTag);
+			oapiRobotSendResponse = sendTextMessage(workloadApiUrl, imageTag);
             // 打印请求异常
             e.printStackTrace();
         }
@@ -136,22 +136,22 @@ public class DevopsService {
     /**
      * 钉钉发送链接消息
      */
-    private OapiRobotSendResponse sendLinkMessage(String workloadApiUrl, String bearerTokenName, String imageTag) {
+    private OapiRobotSendResponse sendLinkMessage(String workloadApiUrl, String imageTag) {
         // 1. 初始化链接消息
         OapiRobotSendRequest request = new OapiRobotSendRequest();
         request.setMsgtype("link");
         OapiRobotSendRequest.Link link = new OapiRobotSendRequest.Link();
 
         // 2. 组装消息体
-        int beginIndex = workloadApiUrl.lastIndexOf(":") + 1;
-        String workloadName = workloadApiUrl.substring(beginIndex);
+        int beginIndex = workloadApiUrl.lastIndexOf("deployment:") + 11;
+        String namespaceWorkloadName = workloadApiUrl.substring(beginIndex);
         String workloadUrl = workloadApiUrlToWorkloadUrl(workloadApiUrl);
         String dateTime = DateUtils.getDatetimeFormatter();
         link.setMessageUrl(workloadUrl);
         link.setPicUrl("");
         link.setTitle("Rancher DevOps");
         link.setText(
-                dateTime + "\n哇哦...工作负载【" + workloadName + ":" + bearerTokenName + ":" + imageTag + "】正在升级，赶快看看吧！"
+                dateTime + "\n工作负载【" + namespaceWorkloadName + ":" + imageTag + "】正在升级，点击查看进度..."
         );
         request.setLink(link);
 
@@ -162,24 +162,25 @@ public class DevopsService {
     /**
      * 钉钉发送文本消息
      */
-    private OapiRobotSendResponse sendTextMessage(String workloadApiUrl, String bearerTokenName, String imageTag) {
+    private OapiRobotSendResponse sendTextMessage(String workloadApiUrl, String imageTag) {
         // 1. 初始化文本消息
         OapiRobotSendRequest request = new OapiRobotSendRequest();
         request.setMsgtype("text");
         OapiRobotSendRequest.Text text = new OapiRobotSendRequest.Text();
 
         // 2. 组装消息体
-        int beginIndex = workloadApiUrl.lastIndexOf(":") + 1;
-        String workloadName = workloadApiUrl.substring(beginIndex);
+        int beginIndex = workloadApiUrl.lastIndexOf("deployment:") + 11;
+        String namespaceWorkloadName = workloadApiUrl.substring(beginIndex);
         String workloadUrl = workloadApiUrlToWorkloadUrl(workloadApiUrl);
         String yueOpenDevopsDeployWorkloadUrl = devopsDeployProperties.getYueOpenDevopsDeployWorkloadUrl();
         String dateTime = DateUtils.getDatetimeFormatter();
         text.setContent(
                 dateTime
-                        + "\n警告...警告！工作负载【" + workloadName + ":" + bearerTokenName + ":" + imageTag + "】升级失败...\n"
-                        + "请点击以下链接检查 " + applicationName + " 部署日志：\n"
+                        + "\n\n出错了... 出错了！！！\n\n"
+                        + "工作负载【" + namespaceWorkloadName + ":" + imageTag + "】升级失败...\n"
+                        + "请点击以下链接，检查 " + applicationName + " 部署日志：\n"
                         + yueOpenDevopsDeployWorkloadUrl + "\n"
-                        + "若需要手动进行工作负载升级，请访问如下地址：\n"
+                        + "请点击以下链接，检查工作负载状况（选择手动升级）：\n"
                         + workloadUrl + "\n"
         );
         request.setText(text);

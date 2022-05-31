@@ -5,15 +5,15 @@
     <parent>
         <groupId>ai.ylyue</groupId>
         <artifactId>yue-library-dependencies</artifactId>
-        <version>j11.2.4.0</version>
+        <version>j11.2.6.0</version>
     </parent>
     <artifactId>yue-open-devops-deploy</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <name>yue-open-devops-deploy</name>
     <description>yue-open Rancher 持续部署</description>
 
     <properties>
-        <alibaba-dingtalk.version>2.0.0</alibaba-dingtalk.version>
+        <dingtalk.version>2.0.0</dingtalk.version>
     </properties>
 
     <dependencies>
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>alibaba-dingtalk-service-sdk</artifactId>
-            <version>${alibaba-dingtalk.version}</version>
+            <version>${dingtalk.version}</version>
         </dependency>
     </dependencies>
 
