@@ -13,6 +13,9 @@
 	<a target="_blank" href="https://www.apache.org/licenses/LICENSE-2.0.html">
 		<img alt="GitHub" src="https://img.shields.io/github/license/yue-open/yue-open-devops-deploy?style=flat-square">
 	</a>
+	<a target="_blank" href="https://hub.docker.com/r/ylyue/yue-open-devops-deploy/">
+		<img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/ylyue/yue-open-devops-deploy.svg">
+	</a>
 	<a target="_blank" href="https://gitee.com/yue-open/yue-open-devops-deploy">
 		<img src='https://gitee.com/yue-open/yue-open-devops-deploy/badge/star.svg?theme=dark' alt='gitee star'>
 	</a>
