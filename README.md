@@ -72,7 +72,7 @@ yue:
 
 docker启动命令示例（注意替换`-e`环境变量中的值）：
 ```docker
-docker run -d -e key=value -p9999:9999 --name=yue-open-devops-deploy ylyue/yue-open-devops-deploy:1.1.0
+docker run -d -e key=value -p9999:9999 --name=yue-open-devops-deploy ylyue/yue-open-devops-deploy:1.2.0
 ```
 
 ## 如何使用
@@ -162,6 +162,11 @@ project API端点浏览器访问响应示例（已做精简）：
 点击`data.links.workloads`的url，可用进入workloads端点，找到对应的工作负载，便可获得`workloadApiUrl`
 
 ## 版本历史
+### 1.2.0
+- 增强bearerToken的兼容性，可识别未带`Bearer `前缀的bearerToken
+- 优化钉钉通知，使得无论是成功或错误通知，都更加直观具体
+- 完善workloadApiUrl请求参数详解文档
+
 ### 1.1.1
 - 钉钉通知加入imageTag，方便docker镜像版本追溯
 
