@@ -52,7 +52,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>*confidential*.properties</exclude>-->
+                        <exclude>*confidential*.properties</exclude>
                         <exclude>*confidential*.yml</exclude>
                     </excludes>
                 </configuration>
